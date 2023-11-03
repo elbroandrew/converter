@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from wtforms import SubmitField
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 
 
@@ -7,5 +8,6 @@ class ImageForm(FlaskForm):
         FileRequired(),
         FileAllowed(['blp'], ".BLP files only required!")
     ])
+    submit = SubmitField('convert image')
 
  

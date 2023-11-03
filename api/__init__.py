@@ -1,6 +1,7 @@
 from flask import Flask
-from converter.core.views import core
+from api.core.views import core
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secretkey'
 
 app.register_blueprint(core)
