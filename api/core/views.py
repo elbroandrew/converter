@@ -1,5 +1,5 @@
 import pathlib
-from flask import render_template, request, Blueprint, redirect, url_for
+from flask import render_template, request, Blueprint, redirect, url_for, flash
 from api.core.forms import ImageForm
 from werkzeug.utils import secure_filename
 
@@ -18,6 +18,7 @@ def upload_image():
         project_dir = pathlib.Path(__file__).resolve()
         save_path = project_dir.parent.parent/"assets"/filename
         img.save(save_path)
+        flash("File uploaded sucessfuly.")
         return redirect(url_for('core.upload_image'))
 
     return render_template('index.html', form=form)
