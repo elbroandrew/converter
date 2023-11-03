@@ -1,6 +1,5 @@
 from PIL import Image
-import PIL
 
-im = Image.open("assets\HighElfWarMage.blp")
+im = Image.open("api\\assets\\CW_Galen_Trollbane.blp")
 
-im_png = im.save("results\output.png")
+im_png = im.save("api\\results\\output.png")

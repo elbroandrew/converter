@@ -1,4 +1,4 @@
 __pycache__
 venv
-converter/assets/*.blp
-converter/results/*.png
+api/assets/*.blp
+api/results/*.png
