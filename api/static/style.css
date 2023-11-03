@@ -1,0 +1,32 @@
+body {
+    background-color: #f0fcff;
+    position: relative;
+}
+
+.btn-outline-info {
+    background-color: #e7e3fd;
+
+}
+
+.jumbotron {
+    padding: 2rem 1rem;
+}
+
+.alert {
+    color: #856404;
+    background-color: #fff3cd;
+    position: absolute;
+    animation: hideMe 5s forwards;
+    right: 0;
+}
+@keyframes hideMe{
+    0%{
+        opacity: 1;
+    }
+    50%{
+        opacity: 1;
+    }
+    100%{
+        opacity: 0;
+    }
+}

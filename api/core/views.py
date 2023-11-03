@@ -5,11 +5,10 @@ from werkzeug.utils import secure_filename
 
 core = Blueprint('core', __name__)
 
-@core.route('/index', methods=['GET', 'POST'])
+@core.route('/', methods=['GET', 'POST'])
 def upload_image():
     '''
-    This is the home page view. Notice how it uses pagination to show a limited
-    number of posts by limiting its query size and then calling paginate.
+    This is the home page view.
     '''
     form = ImageForm()
     if form.validate_on_submit():
@@ -26,8 +25,7 @@ def upload_image():
 @core.route('/info')
 def info():
     '''
-    Example view of any other "core" page. Such as a info page, about page,
-    contact page. Any page that doesn't really sync with one of the models.
+    Example view of any other "core" page.
     '''
     return render_template('info.html')
 

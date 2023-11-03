@@ -2,10 +2,6 @@
 ## - activate venv (start CMD with admin privileges), then:
 `.\venv\Scripts\activate`
 
-## - run file:
-
-`py -m main`
-
 ## Set up FLASK_APP variable for Win10:
 
 `$env:FLASK_APP="app.py"`
