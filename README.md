@@ -6,3 +6,14 @@
 
 `py -m main`
 
+## Set up FLASK_APP variable for Win10:
+
+`$env:FLASK_APP="app.py"`
+
+## Run the Flask app:
+
+`py -m app`
+
+## Go to:
+
+`http://127.0.0.1:5000`
