@@ -16,6 +16,7 @@ def upload_image():
         filename = secure_filename(img.filename)
         project_dir = pathlib.Path(__file__).resolve()
         save_path = project_dir.parent.parent/"assets"/filename
+        print(img)
         img.save(save_path)
         flash("File uploaded sucessfuly.")
         return redirect(url_for('core.upload_image'))
