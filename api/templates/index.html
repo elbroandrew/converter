@@ -7,17 +7,28 @@
 
   <div class="container">
     <form class="form-group" enctype="multipart/form-data" method="POST">
-       {{ form.hidden_tag() }}
-  
-       <div class="form-group">
-       <h2>Image:</h2>
-       {{ form.image(class="form-control form-control-lg") }}
-       </div>
-       <div class="form-group">
-           {{ form.submit(class="btn btn-outline-info") }}
-       </div>
+      {{ form.hidden_tag() }}
+
+      <div class="form-group">
+      <h2>Image:</h2>
+        {{ form.image(class="form-control form-control-lg") }}
+      </div>
+      <div class="form-group">
+        {{ form.send(class="btn btn-outline-info") }}
+      </div>
     </form>
-  
+
+    <form class="form-group" method="POST">
+      {{ form.hidden_tag() }}
+      <div class="form-group">
+        {% if btn == true %}
+          <h2>File is ready: {{ filename }}</h2>
+          {{ form_download.download(class="btn btn-outline-info") }}
+        {% endif %}
+      </div>
+    </form>
+    
+    
   </div>
 
 {% endblock %}
