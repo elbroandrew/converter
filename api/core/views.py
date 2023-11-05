@@ -28,6 +28,7 @@ def upload_image():
             # save multipart octet to bytes
             image_bytes = BytesIO(img.stream.read())
             image = Image.open(image_bytes)
+            image_bytes.close()
 
             try:
                 image.save("converter/output.png")
