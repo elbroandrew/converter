@@ -9,7 +9,6 @@ class ImageForm(FlaskForm):
         FileAllowed(['blp'], ".BLP files only required!")
     ])
     send = SubmitField(label="convert image")
-    # download = SubmitField(label='download')
 
 
 class DownloadForm(FlaskForm):

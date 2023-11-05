@@ -1,0 +1,1 @@
+from converter.converter import BLP_to_PNG_converter

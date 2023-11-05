@@ -1,9 +1,9 @@
 from PIL import Image
 from io import BytesIO
 
-im = Image.open("assets\HighElfWarMage.blp")
+# im = Image.open("api/assets/CW_Galen_Trollbane.blp")
 
-im_png = im.save("results\output.png")
+# im_png = im.save("converter/results/output.png")
 
 class BLP_to_PNG_converter:
 
@@ -21,6 +21,6 @@ class BLP_to_PNG_converter:
         return byte_im
 
     
-    def bytes_to_image(byte_im: bytes):
+    def bytes_to_image(self, byte_im: bytes):
         new_image = Image.open(BytesIO(byte_im))
         new_image.save("OUTPUT.png")
