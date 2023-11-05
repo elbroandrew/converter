@@ -20,7 +20,7 @@ def upload_image():
     form = ImageForm()
     form_download = DownloadForm()
     if request.method == 'POST' and  form.validate_on_submit():
-        if form.send.data:
+        if form.submit_send.data:
             img = request.files['image']
             filename = secure_filename(img.filename)
             project_dir = pathlib.Path(__file__).resolve()
@@ -42,11 +42,14 @@ def upload_image():
         return render_template('index.html', form=form, form_download=form_download, btn=btn, filename=filename)  # redirect(url_for('core.upload_image'))
     print("btn :%s" % btn)
 
-    if request.method == 'POST' and  form_download.validate_on_submit():
-            if image:
-                print(f"DOWNLOADING IMAGE: {image}")
-            else:
-                 print("NOTHING TO DOWNLOAD.")
+    if request.method == 'POST' and  form_download.submit.data:
+        print("download form is submitted: %s" % form_download.is_submitted())
+        print(f"download form validate: {form_download.validate()}")
+        print(f"download form data: {form_download.submit.data}")
+        if image:
+            print(f"DOWNLOADING IMAGE: {image}")
+        else:
+            print("NOTHING TO DOWNLOAD.")
 
 
     return render_template('index.html', form=form, form_download=form_download, btn=btn, filename=filename)
