@@ -24,4 +24,4 @@ class BLP_to_PNG_converter:
     def bytes_to_image(self, byte_im: bytes):
         new_image = Image.open(BytesIO(byte_im))
         new_image.save("OUTPUT.png")
->>>>>>> 7063dc8b13697b2b2efaf9200a9d8bf94b7dfc28
+
