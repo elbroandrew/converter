@@ -5,7 +5,12 @@ body {
 
 .btn-outline-info {
     background-color: #e7e3fd;
+    color: #063133;
 
+}
+
+.validation_error {
+    color: red;
 }
 
 .jumbotron {
