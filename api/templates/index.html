@@ -16,14 +16,19 @@
       <div class="form-group">
         {{ form.send(class="btn btn-outline-info") }}
       </div>
-      {% if btn == true %}
-        <div class="form-group">
-          <h2>File is ready:</h2>
-          {{ form.download(class="btn btn-outline-info") }}
-        </div>
-      {% endif %}
     </form>
-  
+
+    <form class="form-group" method="POST">
+      {{ form.hidden_tag() }}
+      <div class="form-group">
+        {% if btn == true %}
+          <h2>File is ready: {{ filename }}</h2>
+          {{ form_download.download(class="btn btn-outline-info") }}
+        {% endif %}
+      </div>
+    </form>
+    
+    
   </div>
 
 {% endblock %}

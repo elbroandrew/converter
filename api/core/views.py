@@ -1,6 +1,6 @@
 import pathlib
 from flask import render_template, Blueprint, redirect, url_for, flash, request
-from api.core.forms import ImageForm
+from api.core.forms import ImageForm, DownloadForm
 from werkzeug.utils import secure_filename
 
 core = Blueprint('core', __name__)
@@ -10,8 +10,10 @@ def upload_image():
     '''
     This is the home page view.
     '''
+    filename=None
     btn=False
     form = ImageForm()
+    form_download = DownloadForm()
     if request.method == 'POST' and  form.validate_on_submit():
         if form.send.data:
             img = form.image.data
@@ -25,13 +27,15 @@ def upload_image():
             except Exception:
                 flash("Could not upload the file.")
             
-        if form.download.data:
-            print("DOWNLOADING IMAGE.")
         print(btn)
-        return render_template('index.html', form=form, btn=btn)  # redirect(url_for('core.upload_image'))
-    print("btn :%s" % btn)            
+        print(filename)
+        return render_template('index.html', form=form, form_download=form_download, btn=btn, filename=filename)  # redirect(url_for('core.upload_image'))
+    print("btn :%s" % btn)
 
-    return render_template('index.html', form=form, btn=btn)
+    if request.method == 'POST' and  form_download.validate_on_submit():
+            print("DOWNLOADING IMAGE.")    
+
+    return render_template('index.html', form=form, form_download=form_download, btn=btn, filename=filename)
 
 
 @core.route('/info')
