@@ -4,6 +4,8 @@ from api.core.forms import ImageForm, DownloadForm
 from werkzeug.utils import secure_filename
 from PIL import Image
 from io import BytesIO
+import numpy as np
+
 
 core = Blueprint('core', __name__)
 
@@ -19,15 +21,13 @@ def upload_image():
     form_download = DownloadForm()
     if request.method == 'POST' and  form.validate_on_submit():
         if form.send.data:
-            img = form.image.data
+            img = request.files['image']
             filename = secure_filename(img.filename)
             project_dir = pathlib.Path(__file__).resolve()
             save_path = project_dir.parent.parent/"assets"/filename
             # save multipart octet to bytes
-            img2 = img.read()  # get content in bytes
-            byte_im = BytesIO(img2)
-            print(byte_im.getbuffer().nbytes)
-            image = Image.frombytes('L', (100, 100), byte_im.getvalue())
+            image_bytes = BytesIO(img.stream.read())
+            image = Image.open(image_bytes)
 
             try:
                 image.save("converter/output.png")
