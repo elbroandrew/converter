@@ -32,10 +32,10 @@ def upload_image():
                 #image.save("converter/output.png")
                 return send_file(image, download_name="output.png",  as_attachment=True)
                 image_bytes.close()
-                flash("File uploaded sucessfuly.")
+                flash("File uploaded sucessfuly.", category='success')
                 btn=True
             except Exception as e:
-                flash("Could not upload the file.")
+                flash("Could not upload the file.", category='error')
                 return "Error: " + str(e)
             
         print(btn)

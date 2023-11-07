@@ -18,12 +18,21 @@ body {
 }
 
 .alert {
-    color: #856404;
-    background-color: #fff3cd;
     position: absolute;
     animation: hideMe 5s forwards;
     right: 0;
 }
+
+.alert.success {
+    color: #856404;
+    background-color: #fff3cd;
+}
+
+.alert.error {
+    color: white;
+    background-color: rgb(252, 109, 109);
+}
+
 @keyframes hideMe{
     0%{
         opacity: 1;
