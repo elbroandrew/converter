@@ -23,7 +23,7 @@ def upload_image():
             img = request.files['image']
             filename = secure_filename(img.filename)
             project_dir = pathlib.Path(__file__).resolve()
-            save_path = project_dir.parent.parent/"assets"/filename
+            save_path = project_dir.parent.parent/"images"/filename
             # save multipart octet to bytes
             image_bytes = BytesIO(img.stream.read())
             image = Image.open(image_bytes)
@@ -36,7 +36,7 @@ def upload_image():
                 btn=True
             except Exception as e:
                 flash("Could not upload the file.", category='error')
-                return "Error: " + str(e)
+                print(e)
             
         print(btn)
         print(image)
