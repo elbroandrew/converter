@@ -1,10 +1,9 @@
 import pathlib
-from flask import render_template, Blueprint, flash, request
+from flask import render_template, Blueprint, flash, request, send_file,  stream_with_context, Response
 from api.core.forms import ImageForm, DownloadForm
 from werkzeug.utils import secure_filename
 from PIL import Image
 from io import BytesIO
-import numpy as np
 
 
 core = Blueprint('core', __name__)
@@ -28,19 +27,20 @@ def upload_image():
             # save multipart octet to bytes
             image_bytes = BytesIO(img.stream.read())
             image = Image.open(image_bytes)
-            image_bytes.close()
-
+            filename = filename.split('.')[0]
             try:
-                image.save("converter/output.png")
+                #image.save("converter/output.png")
+                return send_file(image, download_name="output.png",  as_attachment=True)
+                image_bytes.close()
                 flash("File uploaded sucessfuly.")
                 btn=True
             except Exception as e:
                 flash("Could not upload the file.")
-                print(e)
+                return "Error: " + str(e)
             
         print(btn)
         print(image)
-        return render_template('index.html', form=form, form_download=form_download, btn=btn, filename=filename)  # redirect(url_for('core.upload_image'))
+        return render_template('index.html', form=form, form_download=form_download, btn=btn, filename=f"{filename}.png")  # redirect(url_for('core.upload_image'))
     print("btn :%s" % btn)
 
     if request.method == 'POST' and  form_download.submit.data:
