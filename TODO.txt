@@ -1,3 +1,6 @@
+Most preferable way:
+create Flask Session and save file in Redis or so.
+
 Вариант 1
 сделать форму,
 JS делает AJAX запрос и вместе с файлом,
