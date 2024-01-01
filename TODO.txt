@@ -5,6 +5,7 @@
 
 -pytest (протестировать urls "https://www.youtube.com/watch?v=45DnUVHQOUU")
 
--locust? И потом посмотреть нужен ли RabbitMQ.
+-locust?
 
-- jobtensor com -- сделать так же карту с leaflet, (Vue?), и скрипт типа генерирует координаты, и оттуда, якобы, запросы. 
+- https://www.youtube.com/watch?v=9GM7CQwKld8&list=PLFAQFisfyqlXt2kAMc1L2NC9NgHPSQgvQ&index=12
+как в этом проекте сделать кодировщик
