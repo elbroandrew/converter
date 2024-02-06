@@ -1,11 +1,11 @@
-import pathlib
 import redis
-from flask import render_template, Blueprint, flash, request, send_file,  stream_with_context, Response
-from flask import g
+from flask import render_template, Blueprint, flash, request, send_file
+# from flask import g
 from api.core.forms import ImageForm, DownloadForm
 from werkzeug.utils import secure_filename
 from PIL import Image
 from io import BytesIO
+from converter import *
 
 
 core = Blueprint('core', __name__)
@@ -23,27 +23,25 @@ def upload_image():
     if request.method == 'POST' and  form.validate_on_submit():
         if form.submit_send.data:
             img = request.files['image']
-            filename = secure_filename(img.filename)
-            #project_dir = pathlib.Path(__file__).resolve()
-            #save_path = project_dir.parent.parent/"images"/filename
+            secure_filename(img.filename)
             # save multipart octet to bytes
             image_bytes = BytesIO(img.stream.read())
-            image = Image.open(image_bytes)
-            # filename = filename.split('.')[0]
+            save_img_bytes_to_redis(image_bytes)  # test
+            # image = Image.open(image_bytes)
             try:
-                #image.save("converter/output.png")
-                return send_file(image, download_name="output.png",  as_attachment=True)
+                # image.save("converter/output.png")
+                #return send_file(image, download_name="output.png",  as_attachment=True)
                 image_bytes.close()
                 flash("File uploaded sucessfuly.", category='success')
                 btn=True
             except Exception as e:
                 flash("Could not upload the file.", category='error')
-                print(e)
+                # print(e)
             
-        print(btn)
-        print(image)
+        # print(btn)
+        # print(image)
         return render_template('index.html', form=form, form_download=form_download, btn=btn, filename=f"{filename}.png")  # redirect(url_for('core.upload_image'))
-    print("btn :%s" % btn)
+    # print("btn :%s" % btn)
 
     if request.method == 'POST' and  form_download.submit.data:
         print("download form is submitted: %s" % form_download.is_submitted())
@@ -65,21 +63,18 @@ def info():
     '''
     return render_template('info.html')
 
-@core.route('/setvar')
-def setvar():
-    g.redis_client.set('foo', 'bar')
-    return "set foo"
 
 
 @core.route('/getvar')
 def getvar():
-    return g.redis_client.get('foo')
+    return g.redis_client.get('img')
 
 
 @core.before_request
 def before_request():
     try:
-        g.redis_client = redis.Redis(host='localhost', port=6379, decode_responses=True)
+        # connecting to Redis here:
+        g.redis_client = redis.Redis(host='localhost', port=6379, decode_responses=False)  #  TODO: change to 'True' after testing image
     except redis.exceptions.ConnectionError as err: 
         print("Connection error occured." , err)
         

@@ -1,1 +1,1 @@
-from converter.converter import BLP_to_PNG_converter
+from converter.converter import *
