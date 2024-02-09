@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 from PIL import Image
 from io import BytesIO
 from converter import *
-
+from flask import make_response
 
 core = Blueprint('core', __name__)
 
@@ -51,16 +51,21 @@ def upload_image():
         else:
             print("NOTHING TO DOWNLOAD.")
 
+    if request.method == 'GET':  # testing getting cookies
+        try:
+            theme = request.cookies.get("theme")
+            print(theme)
+        except Exception:
+            print("No such cookie.")
 
     return render_template('index.html', form=form, form_download=form_download, btn=btn, filename=filename)
 
 
 @core.route('/info')
 def info():
-    '''
-    Example view of any other "core" page.
-    '''
-    return render_template('info.html')
+    resp = make_response(render_template('info.html'))
+    resp.set_cookie("theme", "dark")
+    return resp
 
 
 
