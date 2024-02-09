@@ -1,6 +1,5 @@
 import redis
 from flask import render_template, Blueprint, flash, request, send_file
-# from flask import g
 from api.core.forms import ImageForm, DownloadForm
 from werkzeug.utils import secure_filename
 from PIL import Image
@@ -26,7 +25,7 @@ def upload_image():
             secure_filename(img.filename)
             # save multipart octet to bytes
             image_bytes = BytesIO(img.stream.read())
-            save_img_bytes_to_redis(image_bytes)  # test
+            save_img_bytes_to_redis(image_bytes)  # test, set var
             # image = Image.open(image_bytes)
             try:
                 # image.save("converter/output.png")
