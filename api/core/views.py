@@ -1,5 +1,5 @@
 import redis
-from flask import render_template, Blueprint, flash, request, send_file
+from flask import render_template, Blueprint, flash, request, session, send_file
 from api.core.forms import ImageForm, DownloadForm
 from werkzeug.utils import secure_filename
 from PIL import Image
@@ -55,23 +55,27 @@ def upload_image():
         try:
             theme = request.cookies.get("theme")
             print(theme)
+            session["username"] = "Andrew"
+            
         except Exception:
             print("No such cookie.")
 
     return render_template('index.html', form=form, form_download=form_download, btn=btn, filename=filename)
-
+# session:"eyJjc3JmX3Rva2VuIjoiZmJkNzc5MDk0Y2U2MjkyMDM3YzcyZGI5MzYwZjViOGUzNjMwNzQzNiJ9.ZcXkVA.l-zmbCORV28n_GcJwpbxyzw3nQs"
+# session:"eyJjc3JmX3Rva2VuIjoiZmJkNzc5MDk0Y2U2MjkyMDM3YzcyZGI5MzYwZjViOGUzNjMwNzQzNiIsInVzZXJuYW1lIjoiQW5kcmV3In0.ZcXmiA.qEQ3yQukWyJETCcj4xiOcU_4TP8"
 
 @core.route('/info')
 def info():
     resp = make_response(render_template('info.html'))
-    resp.set_cookie("theme", "dark")
+    # resp.set_cookie("theme", "dark")
+    print(session.get("username", None))
     return resp
 
 
 
 @core.route('/getvar')
 def getvar():
-    return g.redis_client.get('img')
+    return g.redis_client.get('foo')
 
 
 @core.before_request

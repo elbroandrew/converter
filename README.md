@@ -1,5 +1,5 @@
-## - Run script from the working directory win 10:
-## - activate venv (start CMD with admin privileges), then:
+## - Run script from the work dir in 'Win-10':
+## activate venv (start CMD with admin privileges), then:
 `.\venv\Scripts\activate`
 
 ## Set up FLASK_APP variable for Win10:
@@ -13,3 +13,15 @@
 ## Go to:
 
 `http://127.0.0.1:5000`
+
+## - For Ubuntu just run the app in the dir `/converter`:
+
+`python3 app.py`
+
+## celery run command in the dir `/container`:
+
+1) frirst thing first run docker container with redis
+
+then:
+
+2) `celery -A app.celery worker --loglevel=info`
