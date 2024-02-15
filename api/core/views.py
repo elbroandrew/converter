@@ -1,11 +1,11 @@
 import redis
-from flask import render_template, Blueprint, flash, request, session, send_file
+from flask import render_template, Blueprint, flash, request, session, send_file, jsonify, make_response, g
 from api.core.forms import ImageForm, DownloadForm
 from werkzeug.utils import secure_filename
 from PIL import Image
 from io import BytesIO
-from converter import *
-from flask import make_response
+from converter import save_img_bytes_to_redis
+
 
 core = Blueprint('core', __name__)
 
@@ -25,7 +25,7 @@ def upload_image():
             secure_filename(img.filename)
             # save multipart octet to bytes
             image_bytes = BytesIO(img.stream.read())
-            save_img_bytes_to_redis(image_bytes)  # test, set var
+            ##save_img_bytes_to_redis(image_bytes) 
             # image = Image.open(image_bytes)
             try:
                 # image.save("converter/output.png")
@@ -85,7 +85,13 @@ def before_request():
         g.redis_client = redis.Redis(host='localhost', port=6379, decode_responses=False)  #  TODO: change to 'True' after testing image
     except redis.exceptions.ConnectionError as err: 
         print("Connection error occured." , err)
-        
+
+
+@core.route('/setvar')
+def run_task():
+    task = save_img_bytes_to_redis.delay("image_data")
+    return jsonify({"status": "ok", "Task" : task.get()})
+
 
 
 # register a 'before request handler' & 'teardown request'
