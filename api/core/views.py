@@ -4,7 +4,8 @@ from api.core.forms import ImageForm, DownloadForm
 from werkzeug.utils import secure_filename
 from PIL import Image
 from io import BytesIO
-from converter import save_img_bytes_to_redis, redis_client
+from celery.result import AsyncResult
+from converter import save_img_bytes_to_redis #, redis_client
 
 
 core = Blueprint('core', __name__)
@@ -66,14 +67,16 @@ def upload_image():
 def info():
     resp = make_response(render_template('info.html'))
     # resp.set_cookie("theme", "dark")
-    print(session.get("username", None))
+    # print(session.get("username", None))
     return resp
 
 
 
-@core.route('/getvar')
-def getvar():
-    return redis_client.get('foo')
+@core.route('/getvar/<task_id>')
+def getvar(task_id):
+    task_result = AsyncResult(task_id)
+    # return redis_client.get('foo')
+    return jsonify({"taskState": task_result.state}), 200
 
 
 # @core.before_request
@@ -91,6 +94,7 @@ def run_task():
     # task = save_img_bytes_to_redis.apply_async("image_data")
     # return jsonify({"status": "ok", "Task" : task.get()})  # -- jsonify causes error
     print(task.id)
+    print(task.get())
     return jsonify({"status": "ok", "task_id": task.id})
 
 
