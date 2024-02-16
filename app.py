@@ -2,7 +2,6 @@ from api import app
 from celeryapp.celery_worker import celery_app
 
 
-
 if __name__ == '__main__':
 
     app.run(debug=True)

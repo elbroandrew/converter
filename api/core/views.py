@@ -4,7 +4,7 @@ from api.core.forms import ImageForm, DownloadForm
 from werkzeug.utils import secure_filename
 from PIL import Image
 from io import BytesIO
-from converter import save_img_bytes_to_redis
+from converter import save_img_bytes_to_redis, redis_client
 
 
 core = Blueprint('core', __name__)
@@ -73,16 +73,16 @@ def info():
 
 @core.route('/getvar')
 def getvar():
-    return g.redis_client.get('foo')
+    return redis_client.get('foo')
 
 
-@core.before_request
-def before_request():
-    try:
-        # connecting to Redis here:
-        g.redis_client = redis.Redis(host='localhost', port=6379, decode_responses=False)  #  TODO: change to 'True' after testing image
-    except redis.exceptions.ConnectionError as err: 
-        print("Connection error occured." , err)
+# @core.before_request
+# def before_request():
+#     try:
+#         # connecting to Redis here:
+#         g.redis_client = redis.Redis(host='localhost', port=6379, decode_responses=False)  #  TODO: change to 'True' after testing image
+#     except redis.exceptions.ConnectionError as err: 
+#         print("Connection error occured." , err)
 
 
 @core.route('/setvar')
@@ -90,7 +90,8 @@ def run_task():
     task = save_img_bytes_to_redis.delay("image_data")
     # task = save_img_bytes_to_redis.apply_async("image_data")
     # return jsonify({"status": "ok", "Task" : task.get()})  # -- jsonify causes error
-    return "set var"
+    print(task.id)
+    return jsonify({"status": "ok", "task_id": task.id})
 
 
-core.before_request(before_request)
+# core.before_request(before_request)

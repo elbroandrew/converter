@@ -5,6 +5,9 @@ from flask import g
 # from celery import shared_task
 from celeryapp.celery_worker import celery_app
 
+redis_client = redis.Redis(host='localhost', port=6379, decode_responses=False)  #  TODO: change to 'True' after testing image
+
+
 
 # im = Image.open("api/assets/CW_Galen_Trollbane.blp")
 
@@ -13,7 +16,7 @@ from celeryapp.celery_worker import celery_app
 def save_img_bytes_to_redis(img_bytes):
     # g.redis_client.set('img', img_bytes.getvalue())
     print("SAVED 'FOO' INTO REDIS")
-    g.redis_client.set("foo", "barrr")
+    redis_client.set("foo", "barr")
 
 
 def save_img_to_bytes(self, img_bytes: str) -> bytes:
