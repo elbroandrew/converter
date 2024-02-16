@@ -11,9 +11,7 @@ core = Blueprint('core', __name__)
 
 @core.route('/', methods=['GET', 'POST'])
 def upload_image():
-    '''
-    This is the home page view.
-    '''
+
     image = None
     filename=None
     btn=False
@@ -90,9 +88,9 @@ def before_request():
 @core.route('/setvar')
 def run_task():
     task = save_img_bytes_to_redis.delay("image_data")
-    return jsonify({"status": "ok", "Task" : task.get()})
+    # task = save_img_bytes_to_redis.apply_async("image_data")
+    # return jsonify({"status": "ok", "Task" : task.get()})  # -- jsonify causes error
+    return "set var"
 
 
-
-# register a 'before request handler' & 'teardown request'
 core.before_request(before_request)

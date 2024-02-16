@@ -1,8 +1,13 @@
 from api import app
-# from api import celery_worker
+from celeryapp.celery_worker import celery_app
+
+
 
 if __name__ == '__main__':
+
     app.run(debug=True)
-    # with app.app_context():
-    #     worker = celery_worker.Worker()
-    #     worker.start()
+
+    celery_app.main = app.name
+    with app.app_context():
+        worker = celery_app.Worker()
+        worker.start()

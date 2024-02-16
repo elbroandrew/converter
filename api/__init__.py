@@ -1,10 +1,7 @@
 from flask import Flask
-# from flask import g
 from api.core.views import core
 from flask_wtf import CSRFProtect
 # from flask_session import Session
-# import redis
-from celery import Celery
 
 
 
@@ -19,12 +16,11 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000  # this limits file size for
 
 csrf = CSRFProtect(app)
 
+
+app.config["CELERY_BROKER_URL"] = "redis://127.0.0.1:6379/0"
+app.config["CELERY_RESULT_BACKEND"] = 'redis://localhost:6379/0'
+
+# celery_app.conf.update(app.config)  # это не использовать, т.к. будет ошибка вылетать, что смешиваю старый и новый стили конфигур
 # server_session = Session(app)
-
-app.config["CELERY_BROKER_URL"] = "redis://127.0.0.1:6379/"
-app.config["CELERY_RESULT_BACKEND"] = 'redis://localhost:6379/'
-
-celery_app = Celery(app.name, broker=app.config["CELERY_BROKER_URL"])
-celery_app.conf.update(app.config)
 
 app.register_blueprint(core)

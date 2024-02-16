@@ -2,14 +2,14 @@ from PIL import Image
 from io import BytesIO
 import redis
 from flask import g
-from api import celery_app
+# from celery import shared_task
+from celeryapp.celery_worker import celery_app
 
 
 # im = Image.open("api/assets/CW_Galen_Trollbane.blp")
 
 # im_png = im.save("converter/results/output.png")
-
-@celery_app.task(name="Converting image into .png")
+@celery_app.task(name="CONVERTING IMAGE INTO .PNG TASK")
 def save_img_bytes_to_redis(img_bytes):
     # g.redis_client.set('img', img_bytes.getvalue())
     print("SAVED 'FOO' INTO REDIS")
