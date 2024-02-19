@@ -4,7 +4,6 @@ from flask_wtf import CSRFProtect
 # from flask_session import Session
 
 
-
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secretkey'  # it is for client session cookie; if I use Flask-Session I don't need the 'secret' key. Cannot be deleted. 
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000  # this limits file size for uploading to 16 MB.
@@ -16,11 +15,6 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000  # this limits file size for
 
 csrf = CSRFProtect(app)
 
-
-app.config["CELERY_BROKER_URL"] = "redis://127.0.0.1:6379/0"
-app.config["CELERY_RESULT_BACKEND"] = 'redis://localhost:6379/0'
-
-# celery_app.conf.update(app.config)  # это не использовать, т.к. будет ошибка вылетать, что смешиваю старый и новый стили конфигур
 # server_session = Session(app)
 
 app.register_blueprint(core)

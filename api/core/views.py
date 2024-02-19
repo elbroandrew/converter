@@ -5,7 +5,8 @@ from werkzeug.utils import secure_filename
 from PIL import Image
 from io import BytesIO
 from celery.result import AsyncResult
-from converter import save_img_bytes_to_redis #, redis_client
+from converter import save_img_bytes_to_redis
+from celeryapp.celery_worker import celery_app
 
 
 core = Blueprint('core', __name__)
@@ -74,8 +75,13 @@ def info():
 
 @core.route('/getvar/<task_id>')
 def getvar(task_id):
-    task_result = AsyncResult(task_id)
+    task_result = save_img_bytes_to_redis.AsyncResult(task_id, app=celery_app)
     # return redis_client.get('foo')
+    print("state: ", task_result.state)
+    # print("get: ", task_result.get())
+    print("ready?", task_result.ready())
+    print("ignore enabled?", task_result.ignored)
+    print("task result?", task_result.result)
     return jsonify({"taskState": task_result.state}), 200
 
 
@@ -91,10 +97,10 @@ def getvar(task_id):
 @core.route('/setvar')
 def run_task():
     task = save_img_bytes_to_redis.delay("image_data")
-    # task = save_img_bytes_to_redis.apply_async("image_data")
+    # task = save_img_bytes_to_redis.apply_async(args=["image_data"])
     # return jsonify({"status": "ok", "Task" : task.get()})  # -- jsonify causes error
     print(task.id)
-    print(task.get())
+    print(task.backend)
     return jsonify({"status": "ok", "task_id": task.id})
 
 
