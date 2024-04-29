@@ -73,15 +73,13 @@ def info():
 
 
 
-@core.route('/getvar/<task_id>')
-def getvar(task_id):
-    task_result = save_img_bytes_to_redis.AsyncResult(task_id, app=celery_app)
+@core.route('/getresult/<task_id>')
+def get_result(task_id):
+    task_result = save_img_bytes_to_redis.AsyncResult(task_id)
     # return redis_client.get('foo')
-    print("state: ", task_result.state)
+    print("result state: ", task_result.state)
     # print("get: ", task_result.get())
-    print("ready?", task_result.ready())
-    print("ignore enabled?", task_result.ignored)
-    print("task result?", task_result.result)
+    print("result:", task_result.result)
     return jsonify({"taskState": task_result.state}), 200
 
 

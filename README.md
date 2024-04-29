@@ -2,10 +2,6 @@
 ## activate venv (start CMD with admin privileges), then:
 `.\venv\Scripts\activate`
 
-## Set up FLASK_APP variable for Win10:
-
-`$env:FLASK_APP="app.py"`
-
 ## Run the Flask app:
 
 `py -m app`
@@ -18,10 +14,10 @@
 
 `python3 app.py`
 
-## celery run command in the dir `/container`:
+## Run celery command in the dir `/container`:
 
 1) frirst thing first run docker container with redis
 
-then:
+## then run this celery command in another terminal:
 
-2) `celery -A app.celery worker --loglevel=info`
+2) `celery -A celeryapp.celery_worker worker --loglevel=info`
