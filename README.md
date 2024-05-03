@@ -17,6 +17,7 @@
 ## Run celery command in the dir `/container`:
 
 1) frirst thing first run docker container with redis
+`sudo docker start redis-server`
 
 ## then run this celery command in another terminal:
 

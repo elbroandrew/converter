@@ -102,4 +102,8 @@ def run_task():
     return jsonify({"status": "ok", "task_id": task.id})
 
 
+@core.route("/fetchtest", methods=["GET"])
+def fetchtest():
+    return {"some text": "fetch worked!"}
+
 # core.before_request(before_request)
