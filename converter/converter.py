@@ -4,14 +4,12 @@ from flask import g
 from celeryapp.celery_worker import celery_app
 
 
-
 # im = Image.open("api/assets/CW_Galen_Trollbane.blp")
 
 # im_png = im.save("converter/results/output.png")
 @celery_app.task(name="CONVERTING IMAGE INTO .PNG TASK")
-def save_img_bytes_to_redis(self, img_bytes):
+def save_img_bytes_to_redis(img_bytes):
     # g.redis_client.set('img', img_bytes.getvalue())
-    # redis_client.set("foo", "barr")
     print("hello")
     return "Hello from task"
 
