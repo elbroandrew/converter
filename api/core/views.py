@@ -7,6 +7,7 @@ from io import BytesIO
 from celery.result import AsyncResult
 from converter import save_img_bytes_to_redis
 from celeryapp.celery_worker import celery_app
+import time
 
 
 core = Blueprint('core', __name__)
@@ -104,6 +105,7 @@ def run_task():
 
 @core.route("/fetchtest", methods=["GET"])
 def fetchtest():
+    time.sleep(3)
     return {"some text": "fetch worked!"}
 
 # core.before_request(before_request)
