@@ -8,7 +8,7 @@ from celery.result import AsyncResult
 from converter import save_img_bytes_to_redis
 from celeryapp.celery_worker import celery_app
 import time
-
+import pprint
 
 core = Blueprint('core', __name__)
 
@@ -26,7 +26,8 @@ def upload_image():
             secure_filename(img.filename)
             # save multipart octet to bytes
             image_bytes = BytesIO(img.stream.read())
-            ##save_img_bytes_to_redis(image_bytes) 
+            task = save_img_bytes_to_redis(image_bytes)
+            print(task.result)
             # image = Image.open(image_bytes)
             try:
                 # image.save("converter/output.png")
@@ -77,9 +78,7 @@ def info():
 @core.route('/getresult/<task_id>')
 def get_result(task_id):
     task_result = save_img_bytes_to_redis.AsyncResult(task_id)
-    # return redis_client.get('foo')
     print("result state: ", task_result.state)
-    # print("get: ", task_result.get())
     print("result:", task_result.result)
     return jsonify({"taskState": task_result.state}), 200
 
@@ -96,10 +95,13 @@ def get_result(task_id):
 @core.route('/setvar')
 def run_task():
     task = save_img_bytes_to_redis.delay("image_data")
-    # task = save_img_bytes_to_redis.apply_async(args=["image_data"])
-    # return jsonify({"status": "ok", "Task" : task.get()})  # -- jsonify causes error
     print(task.id)
-    print(task.backend)
+    insp = celery_app.control.inspect()
+    print("TASKS CURRENTLY EXECUTED:")
+    pprint.pprint(insp.active())
+    print("ACTIVE QUEUES: ")
+    pprint.pprint(insp.active_queues())
+
     return jsonify({"status": "ok", "task_id": task.id})
 
 
