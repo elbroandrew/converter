@@ -17,22 +17,10 @@
       <div class="form-group">
         {{ form.submit_send(class="btn btn-outline-info", form="send_file_id") }}
       </div>
-    </form>
-
-    <form class="form-group" id="form_download_id" method="POST">
-      {{ form_download.hidden_tag() }}
-      <div class="form-group">
-        {% if btn == true %}
-          <h2>File is ready: {{ filename }}</h2>
-          {{ form_download.submit(class="btn btn-outline-info", form="form_download_id") }}
-        {% endif %}
-      </div>
-    </form>
-
-
-    <h1 id="to_change"></h1>
-    <button onclick="fetch_data();">Change</button>
-    
+    </form>    
   </div>
+
+  <h1 id="to_change"></h1>
+  <button onclick="fetch_data();">Change</button>
 
 {% endblock %}

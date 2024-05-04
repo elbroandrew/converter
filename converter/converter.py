@@ -1,31 +1,38 @@
 from PIL import Image
 from io import BytesIO
-from flask import g
 from celeryapp.celery_worker import celery_app
 import time
 
 
-# im = Image.open("api/assets/CW_Galen_Trollbane.blp")
+@celery_app.task(name="CONVERT BLP IMAGE INTO PNG")
+def save_png_bytes_to_redis(img):
 
-# im_png = im.save("converter/results/output.png")
-@celery_app.task(name="CONVERTING IMAGE INTO .PNG TASK")
-def save_img_bytes_to_redis(img_bytes: BytesIO):
-    # g.redis_client.set('img', img_bytes.getvalue())
-    print(img_bytes.getvalue())
+    # save multipart octet to bytes
+    img_bytes = BytesIO(img.stream.read())
+    im = Image.open(img_bytes)
+    png_bytes = convert_blp_to_png_bytes(im)
+    img_bytes.close()
     print("CONVERTING IMAGE BLP TO BYTES_IO")
     time.sleep(4)
-    return "Hello from task"
+    return png_bytes
 
 
-def save_img_to_bytes(img_bytes: str) -> bytes:
-    im = Image.open(img_bytes)
-    buf = BytesIO()
-    im.save(buf, format=im.format)  # save to buffer, not disk
-    byte_im: bytes = buf.getvalue()
-    return byte_im
+def convert_blp_to_png_bytes(img) -> BytesIO:
+    """
+    img is BLP image
+    """
+    # im = Image.open(img_bytes)
+    buff = BytesIO()
+    img.save(buff, format='png')  # save to buffer, not to disk
+    png_bytes: bytes = buff.getvalue()
+    buff.close()
+    print("converting data to png")
+    return png_bytes
 
-
-def bytes_to_image(byte_im: bytes):
-    new_image = Image.open(BytesIO(byte_im))
-    new_image.save("OUTPUT.png")
+@celery_app.task(name="DOWNLOAD PNG IMAGE FROM REDIS INSTANCE")
+def get_png_image(png_bytes):
+    new_image = Image.open(BytesIO(png_bytes), format='png')
+    # new_image.save("OUTPUT.png")
+    print("new image to send", new_image)
+    return new_image
 

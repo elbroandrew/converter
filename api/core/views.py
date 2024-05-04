@@ -1,11 +1,8 @@
-import redis
-from flask import render_template, Blueprint, flash, request, session, send_file, jsonify, make_response, g
-from api.core.forms import ImageForm, DownloadForm
+from flask import render_template, Blueprint, flash, request, session, jsonify, make_response
+from api.core.forms import ImageForm
 from werkzeug.utils import secure_filename
-from PIL import Image
-from io import BytesIO
 from celery.result import AsyncResult
-from converter import save_img_bytes_to_redis
+from converter import save_png_bytes_to_redis
 from celeryapp.celery_worker import celery_app
 import time
 import pprint
@@ -15,43 +12,24 @@ core = Blueprint('core', __name__)
 @core.route('/', methods=['GET', 'POST'])
 def upload_image():
 
-    image = None
-    filename=None
-    btn=False
     form = ImageForm()
-    form_download = DownloadForm()
     if request.method == 'POST' and  form.validate_on_submit():
         if form.submit_send.data:
             img = request.files['image']
             secure_filename(img.filename)
-            # save multipart octet to bytes
-            image_bytes = BytesIO(img.stream.read())
-            task = save_img_bytes_to_redis(image_bytes)
-            print(task.result)
-            # image = Image.open(image_bytes)
+            task = save_png_bytes_to_redis.delay(img)
+            print("TASK ID: ", task.id)
+            print("TASK RESULT: ", task.result)
+            task_result = save_png_bytes_to_redis.AsyncResult(task.id)
+            print("result state: ", task_result.state)
+            print("result:", task_result.result)
             try:
-                # image.save("converter/output.png")
-                #return send_file(image, download_name="output.png",  as_attachment=True)
-                image_bytes.close()
                 flash("File uploaded sucessfuly.", category='success')
-                btn=True
             except Exception as e:
                 flash("Could not upload the file.", category='error')
-                # print(e)
-            
-        # print(btn)
-        # print(image)
-        return render_template('index.html', form=form, form_download=form_download, btn=btn, filename=f"{filename}.png")  # redirect(url_for('core.upload_image'))
-    # print("btn :%s" % btn)
 
-    if request.method == 'POST' and  form_download.submit.data:
-        print("download form is submitted: %s" % form_download.is_submitted())
-        print(f"download form validate: {form_download.validate()}")
-        print(f"download form data: {form_download.submit.data}")
-        if image:
-            print(f"DOWNLOADING IMAGE: {image}")
-        else:
-            print("NOTHING TO DOWNLOAD.")
+        return render_template('index.html', form=form)  # redirect(url_for('core.upload_image'))
+
 
     if request.method == 'GET':  # testing getting cookies
         try:
@@ -62,9 +40,8 @@ def upload_image():
         except Exception:
             print("No such cookie.")
 
-    return render_template('index.html', form=form, form_download=form_download, btn=btn, filename=filename)
-# session:"eyJjc3JmX3Rva2VuIjoiZmJkNzc5MDk0Y2U2MjkyMDM3YzcyZGI5MzYwZjViOGUzNjMwNzQzNiJ9.ZcXkVA.l-zmbCORV28n_GcJwpbxyzw3nQs"
-# session:"eyJjc3JmX3Rva2VuIjoiZmJkNzc5MDk0Y2U2MjkyMDM3YzcyZGI5MzYwZjViOGUzNjMwNzQzNiIsInVzZXJuYW1lIjoiQW5kcmV3In0.ZcXmiA.qEQ3yQukWyJETCcj4xiOcU_4TP8"
+    return render_template('index.html', form=form)
+
 
 @core.route('/info')
 def info():
@@ -77,7 +54,7 @@ def info():
 
 @core.route('/getresult/<task_id>')
 def get_result(task_id):
-    task_result = save_img_bytes_to_redis.AsyncResult(task_id)
+    task_result = save_png_bytes_to_redis.AsyncResult(task_id)
     print("result state: ", task_result.state)
     print("result:", task_result.result)
     return jsonify({"taskState": task_result.state}), 200
@@ -94,7 +71,7 @@ def get_result(task_id):
 
 @core.route('/setvar')
 def run_task():
-    task = save_img_bytes_to_redis.delay("image_data")
+    task = save_png_bytes_to_redis.delay("image_data")
     print(task.id)
     insp = celery_app.control.inspect()
     print("TASKS CURRENTLY EXECUTED:")
