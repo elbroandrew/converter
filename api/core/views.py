@@ -6,6 +6,8 @@ from converter import save_png_bytes_to_redis
 from celeryapp.celery_worker import celery_app
 import time
 import pprint
+from io import BytesIO
+from base64 import b64encode
 
 core = Blueprint('core', __name__)
 
@@ -17,12 +19,16 @@ def upload_image():
         if form.submit_send.data:
             img = request.files['image']
             secure_filename(img.filename)
-            task = save_png_bytes_to_redis.delay(img)
+            # save multipart octet to bytes
+            img_bytes = BytesIO(img.stream.read())
+            task = save_png_bytes_to_redis.delay(img_bytes.getvalue())
             print("TASK ID: ", task.id)
             print("TASK RESULT: ", task.result)
+
             task_result = save_png_bytes_to_redis.AsyncResult(task.id)
             print("result state: ", task_result.state)
             print("result:", task_result.result)
+            img_bytes.close()
             try:
                 flash("File uploaded sucessfuly.", category='success')
             except Exception as e:
