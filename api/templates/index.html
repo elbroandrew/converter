@@ -20,6 +20,11 @@
     </form>    
   </div>
 
+  {% if display_download %}
+    <h2>task ID: {{ taskId }}</h2>
+    <button  onclick="window.location.href = '/' ; ">download</button>
+  {% endif %}
+
   <h1 id="to_change"></h1>
   <button onclick="fetch_data();">Change</button>
 
