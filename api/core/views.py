@@ -7,6 +7,7 @@ import time
 import pprint
 from io import BytesIO
 from celery import current_app
+from pathlib import Path
 
 
 core = Blueprint('core', __name__)
@@ -17,7 +18,7 @@ def upload_image():
 
     form = ImageForm()
     display_download = False
-    task_id = ""
+    file_name = ""
     if request.method == 'POST' and  form.validate_on_submit():
 
         session.permanent = True
@@ -29,29 +30,28 @@ def upload_image():
                 secure_filename(img.filename)
                 # save multipart octet to bytes
                 img_bytes = BytesIO(img.stream.read())
-                task = save_png_bytes_to_redis.delay(img_bytes.getvalue())
-                session["task_id"] = str(task.id)
-                task_id = str(task.id)
-                display_download=True
+                task = save_png_bytes_to_redis.delay(img_bytes.getvalue())                
+                if task.get():
+                    session["task_id"] = str(task.id)
+                    display_download=True
+                    file_name = Path(img.filename).stem + ".png"
+                print("STATUS======>",task.status)
                 print("TASK ID: ", task.id)
-                print("TASK RESULT: ", task.result)
-
-                task_result = save_png_bytes_to_redis.AsyncResult(task.id)
-                print("result state: ", task_result.state)
-                print("result:", task_result.result)
-                img_bytes.close()
                 flash("File uploaded sucessfuly.", category='success')
                 
             except Exception as e:
                 flash("Could not upload the file.", category='error')
+                print(e)
+                print(task.status, task.state)
 
-    return render_template('index.html', form=form, display_download=display_download, taskId=task_id)
+            finally:
+                img_bytes.close()
+
+    return render_template('index.html', form=form, display_download=display_download, file_name=file_name)
 
 
 @core.route('/info')
 def info():
-    # resp.set_cookie("theme", "dark")
-    # print(session.get("username", None))
     if session.get('task_id'):
         _task_id_ = session['task_id']
         task = current_app.AsyncResult(_task_id_)
@@ -98,5 +98,5 @@ def fetchtest():
 
 @core.route("/fetchpng", methods=["GET"])
 def fetch_png():
-    time.sleep(2)
+    
     return redirect(url_for('core.upload_image'))

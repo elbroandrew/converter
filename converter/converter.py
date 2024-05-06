@@ -3,13 +3,11 @@ from io import BytesIO
 from celeryapp.celery_worker import celery_app
 
 
-
 @celery_app.task(name="CONVERT BLP IMAGE INTO PNG")
 def save_png_bytes_to_redis(img_bytes):
-
+    
     im = Image.open(BytesIO(img_bytes))
     png_bytes = convert_blp_to_png_bytes(im)
-
     print("CONVERTING IMAGE BLP TO BYTES_IO")
     return png_bytes
 
