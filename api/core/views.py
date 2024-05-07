@@ -1,4 +1,4 @@
-from flask import render_template, Blueprint, flash, request, session, jsonify, redirect, url_for
+from flask import render_template, Blueprint, flash, request, session, jsonify, redirect, url_for, send_file
 from api.core.forms import ImageForm
 from werkzeug.utils import secure_filename
 from converter import save_png_bytes_to_redis, get_png_image
@@ -83,11 +83,10 @@ def fetch_png():
         result_png = get_png_image(task_id)
         session.clear()
         print(result_png)
-        return redirect(url_for('core.upload_image'))
+        return send_file(result_png, mimetype='image/png')
 
     else:
         print("ERROR: cannot fetch png.")
-        return redirect(url_for('core.upload_image'))
 
 
     return redirect(url_for('core.upload_image'))
