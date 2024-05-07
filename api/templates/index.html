@@ -21,11 +21,10 @@
   </div>
 
   {% if display_download %}
-    <h2>{{ file_name }}</h2>
-    <button  onclick="window.location.href = '/' ; ">download</button>
+    <h2 id="to_change">{{ file_name }}</h2>
+    <h2 id="to_change"></h2>
+    <button  onclick="fetch_png();">download</button>
   {% endif %}
 
-  <h1 id="to_change"></h1>
-  <button onclick="fetch_data();">Change</button>
 
 {% endblock %}

@@ -1,6 +1,7 @@
 from PIL import Image
 from io import BytesIO
 from celeryapp.celery_worker import celery_app
+from celery.result import AsyncResult
 
 
 @celery_app.task(name="CONVERT BLP IMAGE INTO PNG")
@@ -25,9 +26,11 @@ def convert_blp_to_png_bytes(img) -> BytesIO:
     return png_bytes
 
 @celery_app.task(name="DOWNLOAD PNG IMAGE FROM REDIS INSTANCE")
-def get_png_image(png_bytes):
-    new_image = Image.open(BytesIO(png_bytes))
-    # new_image.save("OUTPUT.png")
-    print("new image to send", new_image)
-    return new_image
+def get_png_image(task_id):
+    result= AsyncResult(task_id)
+    print("result:",result)
+    # new_image = Image.open(BytesIO(png_bytes))
+    # print("new image to send", new_image)
+    # return new_image
+    return None
 

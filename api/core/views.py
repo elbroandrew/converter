@@ -1,7 +1,7 @@
 from flask import render_template, Blueprint, flash, request, session, jsonify, redirect, url_for
 from api.core.forms import ImageForm
 from werkzeug.utils import secure_filename
-from converter import save_png_bytes_to_redis
+from converter import save_png_bytes_to_redis, get_png_image
 from celeryapp.celery_worker import celery_app
 import time
 import pprint
@@ -65,10 +65,7 @@ def info():
 
 @core.route('/getresult/<task_id>')
 def get_result(task_id):
-    # task_result = save_png_bytes_to_redis.AsyncResult(task_id)
     task = current_app.AsyncResult(task_id)
-    print(task.get())
-    print("user_uuid: ", session["user_uuid"])
     return jsonify({
         "uuid": session["user_uuid"],
         "task_id": task_id,
@@ -96,7 +93,19 @@ def fetchtest():
     time.sleep(3)
     return {"some text": "fetch worked!"}
 
-@core.route("/fetchpng", methods=["GET"])
+@core.route("/fetchpng", methods=["GET", "POST"])
 def fetch_png():
-    
-    return redirect(url_for('core.upload_image'))
+    print("FROM FETCH_PNG")
+    if session.get('task_id'):
+        print("GETTING PNG IMAGE....")
+        task_id = session.get('task_id')
+        result = get_png_image(task_id)
+        file_name = "DONE!"
+        flash("DONE", category='success')
+        #session.clear()
+
+    else:
+        flash("ERROR: Cannot download the file.", category='error')
+        file_name= "Cannot download the png image."
+
+    return redirect(url_for('core.upload_image', file_name=file_name))
