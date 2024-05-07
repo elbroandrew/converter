@@ -9,6 +9,7 @@ app.config['SECRET_KEY'] = 'secretkey'  # it is for client session cookie; if I 
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000  # this limits file size for uploading to 16 MB.
 app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=3)
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_SECURE'] = True
 
 csrf = CSRFProtect(app)
 
