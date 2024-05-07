@@ -30,14 +30,14 @@ def upload_image():
                 secure_filename(img.filename)
                 # save multipart octet to bytes
                 img_bytes = BytesIO(img.stream.read())
-                task = save_png_bytes_to_redis.delay(img_bytes.getvalue())                
+                task = save_png_bytes_to_redis.delay(img_bytes.getvalue())
+                print(task)              
                 if task.get():
+                    print("task get")
                     session["task_id"] = str(task.id)
                     display_download=True
                     file_name = Path(img.filename).stem + ".png"
-                print("STATUS======>",task.status)
-                print("TASK ID: ", task.id)
-                flash("File uploaded sucessfuly.", category='success')
+                    flash("File uploaded sucessfuly.", category='success')
                 
             except Exception as e:
                 flash("Could not upload the file.", category='error')
@@ -75,37 +75,19 @@ def get_result(task_id):
 
 
 
-@core.route('/setvar')
-def run_task():
-    task = save_png_bytes_to_redis.delay("image_data")
-    print(task.id)
-    insp = celery_app.control.inspect()
-    print("TASKS CURRENTLY EXECUTED:")
-    pprint.pprint(insp.active())
-    print("ACTIVE QUEUES: ")
-    pprint.pprint(insp.active_queues())
-
-    return jsonify({"status": "ok", "task_id": task.id})
-
-
-@core.route("/fetchtest", methods=["GET"])
-def fetchtest():
-    time.sleep(3)
-    return {"some text": "fetch worked!"}
-
 @core.route("/fetchpng", methods=["GET", "POST"])
 def fetch_png():
-    print("FROM FETCH_PNG")
     if session.get('task_id'):
         print("GETTING PNG IMAGE....")
         task_id = session.get('task_id')
-        result = get_png_image(task_id)
-        file_name = "DONE!"
-        flash("DONE", category='success')
-        #session.clear()
+        result_png = get_png_image(task_id)
+        session.clear()
+        print(result_png)
+        return redirect(url_for('core.upload_image'))
 
     else:
-        flash("ERROR: Cannot download the file.", category='error')
-        file_name= "Cannot download the png image."
+        print("ERROR: cannot fetch png.")
+        return redirect(url_for('core.upload_image'))
 
-    return redirect(url_for('core.upload_image', file_name=file_name))
+
+    return redirect(url_for('core.upload_image'))
