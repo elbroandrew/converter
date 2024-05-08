@@ -77,16 +77,25 @@ def get_result(task_id):
 
 @core.route("/fetchpng", methods=["GET", "POST"])
 def fetch_png():
-    if session.get('task_id'):
-        print("GETTING PNG IMAGE....")
-        task_id = session.get('task_id')
-        result_png = get_png_image(task_id)
-        session.clear()
-        print(result_png)
-        return send_file(result_png, mimetype='image/png')
+    try:
+        if session.get('task_id'):
+            print("GETTING PNG IMAGE....")
+            task_id = session.get('task_id')
+            result_png = get_png_image(task_id)
+            session.clear()
+            buff = BytesIO(result_png)
+            buff.seek(0)
+            return send_file(
+                buff, 
+                mimetype='image/png',
+                as_attachment=True,
+                download_name="image.png")
 
-    else:
-        print("ERROR: cannot fetch png.")
+        else:
+            print("ERROR: cannot fetch png.")
+    except Exception as e:
+        print("ERROR OCCURED: ")
+        print(e)
 
 
     return redirect(url_for('core.upload_image'))

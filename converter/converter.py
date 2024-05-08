@@ -25,6 +25,9 @@ def convert_blp_to_png_bytes(img) -> BytesIO:
 def get_png_image(task_id):
     task = celery_app.AsyncResult(task_id)
     png_bytes = task.result
+    buff = BytesIO()
     new_image = Image.open(BytesIO(png_bytes))
-    return new_image
+    new_image.save(buff, format='png')
+    PNG = buff.getvalue()
+    return png_bytes
 
