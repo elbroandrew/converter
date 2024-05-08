@@ -29,5 +29,6 @@ def get_png_image(task_id):
     new_image = Image.open(BytesIO(png_bytes))
     new_image.save(buff, format='png')
     PNG = buff.getvalue()
+    task.forget()
     return png_bytes
 
