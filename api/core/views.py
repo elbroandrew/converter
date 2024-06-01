@@ -1,10 +1,8 @@
-from flask import render_template, Blueprint, flash, request, session, jsonify, redirect, url_for, send_file
+from flask import render_template, Blueprint, flash, request, session, redirect, url_for, send_file
 from api.core.forms import ImageForm
 from werkzeug.utils import secure_filename
 from converter import save_png_bytes_to_redis, get_png_image
 from celeryapp.celery_worker import celery_app
-import time
-import pprint
 from io import BytesIO
 from celery import current_app
 from pathlib import Path
@@ -50,30 +48,6 @@ def upload_image():
     return render_template('index.html', form=form, display_download=display_download, file_name=file_name)
 
 
-@core.route('/info')
-def info():
-    if session.get('task_id'):
-        _task_id_ = session['task_id']
-        task = current_app.AsyncResult(_task_id_)
-        print(current_app.AsyncResult(_task_id_))
-        print(task.get())
-        return render_template('info.html', taskId=_task_id_)
-    
-    return render_template('info.html', taskId="PNG IMAGE IS NOT READY YET.")
-
-
-
-@core.route('/getresult/<task_id>')
-def get_result(task_id):
-    task = current_app.AsyncResult(task_id)
-    return jsonify({
-        "uuid": session["user_uuid"],
-        "task_id": task_id,
-        "task_result": str(task.result)
-        }), 200
-
-
-
 
 @core.route("/fetchpng", methods=["GET", "POST"])
 def fetch_png():
@@ -85,6 +59,7 @@ def fetch_png():
             session.clear()
             buff = BytesIO(result_png)
             buff.seek(0)
+            result_png.forget()
             return send_file(
                 buff, 
                 mimetype='image/png',
