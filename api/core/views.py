@@ -59,7 +59,6 @@ def fetch_png():
             session.clear()
             buff = BytesIO(result_png)
             buff.seek(0)
-            result_png.forget()
             return send_file(
                 buff, 
                 mimetype='image/png',
@@ -74,3 +73,8 @@ def fetch_png():
 
 
     return redirect(url_for('core.upload_image'))
+
+
+@core.route("/info", methods=["GET"])
+def info():
+    return render_template('info.html')
