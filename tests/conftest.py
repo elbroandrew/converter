@@ -9,6 +9,7 @@ def init_client():
             "TESTING": True,
         })
         print("\nCreating a client.")
+        assert app.debug == False
         yield client
         print("\nShutting down the client.")
 
@@ -18,3 +19,5 @@ def hello():
     print("\nHELLO")
     yield
     print("\nBYE")
+
+
