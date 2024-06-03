@@ -11,3 +11,10 @@ def init_client():
         print("\nCreating a client.")
         yield client
         print("\nShutting down the client.")
+
+
+@pytest.fixture(scope="function")
+def hello():
+    print("\nHELLO")
+    yield
+    print("\nBYE")
