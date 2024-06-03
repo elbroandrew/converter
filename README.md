@@ -19,3 +19,7 @@ run this celery command in another terminal:
 ## Tests:
 
 `pytest -v`
+
+## Чтобы принты попали в консоль, надо добавить флаг -s:
+
+`pytest -v -s`

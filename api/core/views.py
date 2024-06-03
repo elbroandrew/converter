@@ -4,7 +4,6 @@ from werkzeug.utils import secure_filename
 from converter import save_png_bytes_to_redis, get_png_image
 from celeryapp.celery_worker import celery_app
 from io import BytesIO
-from celery import current_app
 from pathlib import Path
 
 

@@ -2,12 +2,12 @@ import pytest
 from api import app
 
 
-@pytest.fixture
-def client():
+@pytest.fixture(scope="class")
+def init_client():
     with app.test_client() as client:
         app.config.update({
             "TESTING": True,
         })
-        print("Creating a client.")
+        print("\nCreating a client.")
         yield client
-        print("Shutting down the client.")
+        print("\nShutting down the client.")
