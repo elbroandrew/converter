@@ -15,3 +15,7 @@
 run this celery command in another terminal:
 
 2) `celery -A celeryapp.celery_worker worker --loglevel=info`
+
+## Tests:
+
+`pytest -v`
