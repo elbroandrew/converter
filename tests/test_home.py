@@ -1,8 +1,8 @@
-from unittest import TestCase
+from base_test import BaseTest
 from api import app
 
-class TestHome(TestCase):
+class TestHome(BaseTest):
     def test_home(self):
-        with app.test_client() as client:
+        with self.app as client:
             resp = client.get("/")
             self.assertEqual(resp.status_code, 200)
