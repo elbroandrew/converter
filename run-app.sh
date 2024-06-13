@@ -7,4 +7,6 @@ set -e
 #     echo "Waiting for server volume..."
 # done
 
-celery -A celeryapp.celery_worker worker --loglevel=info
+echo "Starting server on port: 5000"
+
+python3 app.py
