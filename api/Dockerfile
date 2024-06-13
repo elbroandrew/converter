@@ -1,6 +1,7 @@
 FROM python:3.9-alpine
 
-RUN apk update && apk add curl
+RUN apk update
+RUN apk add curl
 
 COPY requirements.txt /app/requirements.txt
 
