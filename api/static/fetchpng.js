@@ -1,7 +1,6 @@
 async function fetch_png(){
     const resp = await fetch("/fetchpng");
     if (resp.ok){
-        console.log(resp)
         const blob = await resp.blob();
         const file = window.URL.createObjectURL(blob);
 
