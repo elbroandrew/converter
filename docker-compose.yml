@@ -5,7 +5,40 @@ services:
     build:
       context: .
       dockerfile: ./api/Dockerfile
-    # entrypoint:
+    # entrypoint: run-api.sh
     container_name: api
     ports:
       - 5000:5000
+    networks:
+      - myNetwork
+
+  redis:
+    # restart: unless-stopped
+    container_name: redis
+    image: redis:latest
+    # expose:
+    #   - 6379
+    ports:
+      - 6379:6379
+    networks:
+      - myNetwork
+
+  celery:
+    restart: unless-stopped
+    container_name: celery
+    build:
+      context: .
+      dockerfile: ./celeryapp/Dockerfile
+    networks:
+      - myNetwork
+    entrypoint: ./start-celery.sh
+    # environment:
+
+    # healthcheck:
+    #   test: [ "CMD", "redis-cli", "ping" ]
+    #   retries: 3
+    #   timeout: 5s
+
+networks:
+  myNetwork:
+    driver: bridge

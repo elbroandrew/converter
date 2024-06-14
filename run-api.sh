@@ -7,6 +7,6 @@ set -e
 #     echo "Waiting for server volume..."
 # done
 
-echo "Starting server on port: 5000"
+echo "Starting server at: http://$(hostname -i):5000"
 
 python3 app.py
