@@ -1,5 +1,6 @@
 **/__pycache__
 **/*.pyc
+.vscode
 venv
 **/.pytest_cache
 README.md
@@ -11,3 +12,5 @@ tests
 .github
 .gitignore
 **/Dockerfile
+pytest.log
+app.log

@@ -1,8 +1,7 @@
-from flask import render_template, Blueprint, flash, request, session, redirect, url_for, send_file
+from flask import render_template, Blueprint, flash, request, session, redirect, url_for, send_file, current_app
 from api.core.forms import ImageForm
 from werkzeug.utils import secure_filename
 from converter import save_png_bytes_to_redis, get_png_image
-from celeryapp.celery_worker import celery_app
 from io import BytesIO
 from pathlib import Path
 
@@ -12,6 +11,8 @@ core = Blueprint('core', __name__)
 
 @core.route('/', methods=['GET', 'POST'])
 def upload_image():
+
+    current_app.logger.info("GET REQUEST HIT.")
 
     form = ImageForm()
     display_download = False
@@ -30,7 +31,7 @@ def upload_image():
                 task = save_png_bytes_to_redis.delay(img_bytes.getvalue())
                 print(task)              
                 if task.get():
-                    print("task get")
+                    current_app.logger.info(f"task: {task}")
                     session["task_id"] = str(task.id)
                     display_download=True
                     file_name = Path(img.filename).stem + ".png"
@@ -38,8 +39,7 @@ def upload_image():
                 
             except Exception as e:
                 flash("Could not upload the file.", category='error')
-                print(e)
-                print(task.status, task.state)
+                current_app.logger.error(e, f"task status: {task.status}")
 
             finally:
                 img_bytes.close()
@@ -52,12 +52,12 @@ def upload_image():
 def fetch_png():
     try:
         if session.get('task_id'):
-            print("GETTING PNG IMAGE....")
             task_id = session.get('task_id')
             result_png = get_png_image(task_id)
             session.clear()
             buff = BytesIO(result_png)
             buff.seek(0)
+            current_app.logger.info(f"Sent file: status:{task_id.status}, state: {task_id.state}.")
             return send_file(
                 buff, 
                 mimetype='image/png',
@@ -65,11 +65,11 @@ def fetch_png():
                 download_name="image.png")
 
         else:
-            print("ERROR: cannot fetch png.")
-    except Exception as e:
-        print("ERROR OCCURED: ")
-        print(e)
+            current_app.logger.error(f"Could not send the file: status:{task_id.status}, state: {task_id.state}.")
 
+    except Exception as e:
+        current_app.logger.error(f"Trying fetch png image in 'fetch_png' route", e)
+        raise Exception
 
     return redirect(url_for('core.upload_image'))
 
