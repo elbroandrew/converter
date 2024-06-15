@@ -4,3 +4,4 @@ api/results/*
 api/images/*
 **/.pytest_cache
 .vscode
+flask.log
