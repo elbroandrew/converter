@@ -57,7 +57,7 @@ def fetch_png():
             session.clear()
             buff = BytesIO(result_png)
             buff.seek(0)
-            current_app.logger.info(f"Sent file: status:{task_id.status}, state: {task_id.state}.")
+            current_app.logger.info(f"Sent file: {task_id}.")
             return send_file(
                 buff, 
                 mimetype='image/png',
@@ -65,7 +65,7 @@ def fetch_png():
                 download_name="image.png")
 
         else:
-            current_app.logger.error(f"Could not send the file: status:{task_id.status}, state: {task_id.state}.")
+            current_app.logger.error(f"Could not send the file:")
 
     except Exception as e:
         current_app.logger.error(f"Trying fetch png image in 'fetch_png' route", e)
