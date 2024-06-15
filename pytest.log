@@ -1,0 +1,6 @@
+2024-06-15 10:39:00 [    INFO] Testing Home Page (test_home.py:8)
+2024-06-15 10:39:00 [    INFO] Testing HTML tag (test_html_tags.py:25)
+2024-06-15 10:39:00 [    INFO] Testing fail message in the logger. (test_failed_test.py:6)
+2024-06-15 10:39:00 [   ERROR] assert True == False (test_failed_test.py:10)
+2024-06-15 10:39:01 [    INFO] Assert status code 200 == 200 (test_home.py:19)
+2024-06-15 10:39:01 [    INFO] 'html' tag is present in the DOM. (test_html_tags.py:37)

@@ -1,5 +1,6 @@
 from html.parser import HTMLParser
 import pytest
+import logging
 
 class MyHTML_Parser(HTMLParser):
 
@@ -20,6 +21,8 @@ class MyHTML_Parser(HTMLParser):
 
 @pytest.mark.usefixtures("init_client")
 class TestHTMLtags():
+    LOGGER = logging.getLogger(__name__)
+    LOGGER.info("Testing HTML tag")
 
     @pytest.fixture(autouse=True)
     def client(self, init_client):
@@ -29,6 +32,10 @@ class TestHTMLtags():
         resp = self.client.get("/")
         parser = MyHTML_Parser()
         parser.feed(resp.text)
-        assert parser.get_html_tag() == 'html'
-
-
+        try:
+            assert parser.get_html_tag() == 'html'
+            self.LOGGER.info(f"'html' tag is present in the DOM.")
+        except AssertionError as err:
+            self.LOGGER.error(err)
+            raise AssertionError
+        
