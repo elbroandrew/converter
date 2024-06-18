@@ -1,5 +1,0 @@
-
-
--pytest (протестировать urls "https://www.youtube.com/watch?v=45DnUVHQOUU")
--locust
--nginx (2 приложения, load balance)

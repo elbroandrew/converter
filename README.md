@@ -1,20 +1,12 @@
-## 1. Create redis instance:
+## inside `converter/` directory run:
 
-`sudo docker run -d --name redis-server -p 6379:6379 --restart unless-stopped redis:latest`
+`sudo docker-compose up -d`
 
-## 2. For Ubuntu just run the app from dir `/converter`:
+or
 
-`python3 app.py`
+`sudo docker-compose up -d --build`
 
-## 3. Run celery command from dir `/container`:
 
-1) if redis instance is running - go to step 2, else:
-
-`sudo docker start redis-server`
-
-run this celery command in another terminal:
-
-2) `celery -A celeryapp.celery_worker worker --loglevel=info`
 
 ## Tests:
 
