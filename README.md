@@ -24,4 +24,4 @@ Flower port: `http://0.0.0.0:5555/`
 
 ## Скриншоты приложения и Flower с Celery воркером
 
-![(examples/Screenshot 2024-08-05 at 13-00-44 BLP to PNG image converter App.png)]
+!(img1)[https://github.com/elbroandrew/converter/blob/4ac18bc801a02552d49fdad74427149ac6e60743/examples/Screenshot%202024-08-05%20at%2013-00-44%20BLP%20to%20PNG%20image%20converter%20App.png]
