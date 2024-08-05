@@ -2,10 +2,16 @@
 
 `sudo docker-compose up -d`
 
-or
+или если надо сбилдить образы сначала:
 
 `sudo docker-compose up -d --build`
 
+
+## Затем перейти на:
+
+App port: `http://127.0.0.1/80`
+
+Flower port: `http://0.0.0.0:5555/`
 
 
 ## Tests:
@@ -15,3 +21,6 @@ or
 ## Чтобы принты попали в консоль, надо добавить флаг -s:
 
 `pytest -v -s`
+
+## Скриншоты приложения и Flower с Celery воркером
+
