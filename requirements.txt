@@ -26,8 +26,7 @@ WTForms
 pytest==8.2.1
 uWSGI==2.0.26
 Flask-JWT-Extended
-SQLAlchemy
+SQLAlchemy==2.0.37
 Flask-Migrate
-Flask-SQLAlchemy
-Flask-AppBuilder
+Flask-SQLAlchemy==3.1.0
 connexion
