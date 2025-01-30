@@ -1,10 +1,11 @@
 import os
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, abort
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, current_user
 from models.users import User
+from forms import LoginForm, RegistrationForm
 
 
 auth = Flask(__name__)
@@ -25,6 +26,19 @@ def index():
     return render_template("home.html")
 
 
+@auth.route("/register", methods=["GET", "POST"])
+def register():
+    form = RegistrationForm()
+    if request.method == "POST":
+        user: User = User.query.filter_by(form.username.data).first()
+        if user is None:
+            pass
+        else:
+            abort(409, message="A user with that username already exists.")
+        
+    return render_template("register.html", form=form)
+
+
 @jwt.user_identity_loader
 def user_identity_lookup(user):
     return user.id
@@ -37,18 +51,22 @@ def user_lookup_callback(_jwt_header, jwt_data):
     return User.query.filter_by(id=identity).one_or_none()
 
 
-@auth.route("/login", methods=["POST"])
+@auth.route("/login", methods=["GET", "POST"])
 def login():
-    username = request.json.get("username", None)
-    password = request.json.get("password", None)
+    form = LoginForm()
+    if request.method == "POST":
+        if form.validate_on_submit():
+            username = request.json.get("username", None)
+            password = request.json.get("password", None)
 
-    user = User.query.filter_by(username=username).one_or_none()
-    if not user or not user.check_password(password):
-        return jsonify("Wrong username or password"), 401
+            user = User.query.filter_by(username=username).one_or_none()
+            if not user or not user.check_password(password):
+                return jsonify("Wrong username or password"), 401
 
-    # Notice that we are passing in the actual sqlalchemy user object here
-    access_token = create_access_token(identity=user)
-    return jsonify(access_token=access_token)
+            # Notice that we are passing in the actual sqlalchemy user object here
+            access_token = create_access_token(identity=user)   # use 'id' ?
+            return jsonify(access_token=access_token)
+    return render_template("login.html", form=form)
 
 
 @auth.route("/whoami", methods=["GET"])
