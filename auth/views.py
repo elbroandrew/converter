@@ -1,9 +1,8 @@
 from flask import Blueprint, request, jsonify, render_template, abort, redirect, url_for, flash
-
 from flask_jwt_extended import create_access_token, jwt_required, current_user
 from models.users import User
 from forms import LoginForm, RegistrationForm
-from auth import jwt, db
+from initialize import jwt, db
 
 auth_api = Blueprint("auth_api", __name__)
 
