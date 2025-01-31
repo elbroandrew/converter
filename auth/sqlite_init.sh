@@ -18,17 +18,27 @@ if [ -d "$dirname" ]; then
     else
         echo "Successfully deleted $dirname"
     fi
-else
-    if flask db init ; then
-        echo "$dirname directory has been created."
-        if flask db migrate -m "init db" ; then
-            echo "Make SQlite migrations and create Database"
-            if flask db upgrade ; then
-                echo "DB upgrade: successful."
-            fi
-        fi
-    fi
 fi
+
+if flask db init ; then
+    echo "$dirname directory has been created."
+    if flask db migrate -m "init db" ; then
+        echo "Make SQlite migrations and create Database"
+        if flask db upgrade ; then
+            echo "DB upgrade: successful."
+        else
+            echo "Failed to upgrade DB."
+            exit 1
+        fi
+    else
+        echo "Failed to make migrations."
+        exit 1
+    fi
+else
+    echo "Failed to create DB."
+    exit 1
+fi
+
 
 
 
