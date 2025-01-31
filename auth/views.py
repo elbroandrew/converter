@@ -57,17 +57,15 @@ def user_lookup_callback(_jwt_header, jwt_data):
 @auth_api.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
-    if request.method == "POST":
-        if form.validate_on_submit():
-            username = request.json.get("username", None)
-            password = request.json.get("password", None)
+    if request.method == "POST" and form.validate_on_submit():
+        user: User = User.query.filter_by(email=form.email.data).one_or_none()
 
-            user = User.query.filter_by(username=username).one_or_none()
-            if not user or not user.check_password(password):
-                return jsonify("Wrong username or password"), 401
+        if not user or not user.check_password(form.password.data):
+            return jsonify({"message":"Wrong username or password"}), 401
 
-            access_token = create_access_token(identity=username)   # use 'id' ?
-            return jsonify(message="success", access_token=access_token), 200
+        access_token = create_access_token(identity=user)
+        return jsonify(message="success", access_token=access_token), 200
+
     return render_template("login.html", form=form)
 
 

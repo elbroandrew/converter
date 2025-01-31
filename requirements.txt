@@ -30,3 +30,4 @@ SQLAlchemy==2.0.37
 Flask-Migrate
 Flask-SQLAlchemy==3.1.0
 connexion
+Flask-Cors
