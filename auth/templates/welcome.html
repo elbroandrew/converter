@@ -10,24 +10,9 @@
   </head>
   <body>
     
-    <h1>Registration Page</h1>
+    <h1>Welcome Page</h1>
 
-    <form action="{{ url_for("register") }}" method="post">
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.username.label }}<br>
-            {{ form.username() }}
-        </p>
-        <p>
-            {{ form.password.label }}<br>
-            {{ form.password() }}
-        </p>
-        <p>
-          {{ form.password.label }}<br>
-          {{ form.password() }}
-      </p>
-        <p>{{ form.submit() }}</p>
-    </form>
+    <h2>Welcome, {{ username }}!</h2>
     
   </body>
 </html>

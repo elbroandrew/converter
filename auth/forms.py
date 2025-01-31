@@ -1,18 +1,18 @@
-# Login Form in the Auth Service
 from flask_wtf import FlaskForm
-from wtforms import StringField, EmailField, PasswordField, BooleanField, SubmitField, validators
-
+from wtforms import StringField, EmailField, PasswordField, SubmitField, validators
 
 
 class RegistrationForm(FlaskForm):
-    name = StringField('Name', validators=[validators.InputRequired()])
-    email = EmailField()
-    password = PasswordField('Password', validators=[validators.InputRequired()]) 
-
-
+    username = StringField('Name', validators=[validators.InputRequired(), validators.DataRequired()])
+    email = EmailField("Email", validators=[validators.Email(), validators.DataRequired()])
+    password = PasswordField('Password', validators=[validators.InputRequired(), validators.DataRequired(), validators.EqualTo("pass_confirm")])
+    pass_confirm = PasswordField("Confirm Password", validators=[validators.DataRequired()])
+    submit = SubmitField("Register")
 
 
 class LoginForm(FlaskForm):
 
-    name = StringField('Name', validators=[validators.InputRequired()]) 
-    password = PasswordField('Password', validators=[validators.InputRequired()]) 
+    email = StringField('Email', validators=[validators.DataRequired(), validators.Email()])
+    password = PasswordField('Password', validators=[validators.InputRequired()])
+    submit = SubmitField('Log in')
+    
