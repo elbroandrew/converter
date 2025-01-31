@@ -11,9 +11,17 @@ auth_api = Blueprint("auth_api", __name__)
 def index():
     return render_template("home.html")
 
-@auth_api.route("/welcome")
-def welcome():
-    return render_template("welcome.html")
+@auth_api.route("/welcome/<username>", methods=["GET"])
+def welcome(username):
+    return render_template("welcome.html", username=username)
+
+@auth_api.errorhandler(404)
+def pageNotFound(error):
+    return render_template("page404.html", data="Page Not Found."), 404
+
+@auth_api.errorhandler(409)
+def conflictPage(error):
+    return render_template("page409.html"), 409
 
 
 @auth_api.route("/register", methods=["GET", "POST"])
@@ -22,16 +30,14 @@ def register():
     
     if request.method == "POST" and form.validate_on_submit():
         user: User = User.query.filter_by(username=form.username.data).one_or_none()
-        print("USER:: ", user)
         if user is None:
-            print("create user")
             user = User(email=form.email.data, username=form.username.data, password=form.password.data)
             db.session.add(user)
             db.session.commit()
             flash("Thanks for registration!")
-            return redirect(url_for("auth_api.welcome"), username=user.username)
+            return redirect(url_for("auth_api.welcome", username=user.username))
         else:
-            abort(409, message="A user with that username already exists.")
+            abort(409)
         
     return render_template("register.html", form=form)
 
