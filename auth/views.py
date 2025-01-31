@@ -11,21 +11,27 @@ auth_api = Blueprint("auth_api", __name__)
 def index():
     return render_template("home.html")
 
+@auth_api.route("/welcome")
+def welcome():
+    return render_template("welcome.html")
+
 
 @auth_api.route("/register", methods=["GET", "POST"])
 def register():
     form = RegistrationForm()
-    if request.method == "POST":
-        if form.validate_on_submit():
-            user: User = User.query.filter_by(form.username.data).first()
-            if user is None:
-                user = User(email=form.email.data, username=form.username.data, password=form.password.data)
-                db.session.add(user)
-                db.session.commit()
-                flash("Thanks for registration!")
-                return redirect(url_for("welcome"), username=user.username)
-            else:
-                abort(409, message="A user with that username already exists.")
+    
+    if request.method == "POST" and form.validate_on_submit():
+        user: User = User.query.filter_by(username=form.username.data).one_or_none()
+        print("USER:: ", user)
+        if user is None:
+            print("create user")
+            user = User(email=form.email.data, username=form.username.data, password=form.password.data)
+            db.session.add(user)
+            db.session.commit()
+            flash("Thanks for registration!")
+            return redirect(url_for("auth_api.welcome"), username=user.username)
+        else:
+            abort(409, message="A user with that username already exists.")
         
     return render_template("register.html", form=form)
 
@@ -68,3 +74,5 @@ def protected():
         username=current_user.username,
         is_admin=current_user.is_admin
     )
+
+

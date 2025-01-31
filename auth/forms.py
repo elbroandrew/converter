@@ -1,18 +1,21 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, EmailField, PasswordField, SubmitField, validators
+from wtforms import StringField, EmailField, PasswordField, SubmitField
+from wtforms.validators import DataRequired, EqualTo, Email
 
 
 class RegistrationForm(FlaskForm):
-    username = StringField('Name', validators=[validators.InputRequired(), validators.DataRequired()])
-    email = EmailField("Email", validators=[validators.Email(), validators.DataRequired()])
-    password = PasswordField('Password', validators=[validators.InputRequired(), validators.DataRequired(), validators.EqualTo("pass_confirm")])
-    pass_confirm = PasswordField("Confirm Password", validators=[validators.DataRequired()])
+    username = StringField('Name', validators=[DataRequired()])
+    email = EmailField("Email", validators=[Email(), 
+                                            DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    pass_confirm = PasswordField("Confirm Password", validators=[DataRequired(),                                                                  
+                                                    EqualTo("password", message="Passwords must match.")])
     submit = SubmitField("Register")
 
 
 class LoginForm(FlaskForm):
 
-    email = StringField('Email', validators=[validators.DataRequired(), validators.Email()])
-    password = PasswordField('Password', validators=[validators.InputRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Log in')
     
