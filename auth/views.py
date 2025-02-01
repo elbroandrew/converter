@@ -12,7 +12,7 @@ auth_api = Blueprint("auth_api", __name__)
 def index():
     return render_template("home.html")
 
-@auth_api.route("/welcome", methods=["GET"])
+@auth_api.route("/welcome", methods=["GET"])  #TODO: REMOVE WELCOME PAGE & REDIRECT TO API HOME PAGE
 def welcome():
     return render_template("welcome.html", username=request.args.get("username"))
 

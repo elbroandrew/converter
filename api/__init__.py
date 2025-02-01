@@ -33,7 +33,7 @@ app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=3)
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_SECURE'] = True
 app.config["JWT_SECRET_KEY"] = "jwtsecretkey"
-
+app.config["JWT_TOKEN_LOCATION"] = ["headers", "cookies"]
 
 csrf = CSRFProtect(app)
 

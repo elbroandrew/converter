@@ -7,4 +7,4 @@ app.register_blueprint(auth_api)
 
 if __name__ == '__main__':
 
-    app.run(host="127.0.0.1", debug=True, port=5005)  #TODO: do not forget to turn off for the deploying
+    app.run(host="0.0.0.0", debug=False, port=5005)
