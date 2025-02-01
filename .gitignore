@@ -7,3 +7,4 @@ api/images/*
 flask.log
 data.sqlite
 migrations
+data

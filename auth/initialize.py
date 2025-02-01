@@ -10,8 +10,9 @@ app = Flask(__name__)
 CORS(app)
 
 app.config['SECRET_KEY'] = 'secretkey'  # put it in env file, must be the same as for 'api' service
-dbasedir = os.path.abspath(os.path.dirname(__file__))
-app.config["SQLALCHEMY_DATABASE_URI"]="sqlite:///"+os.path.join(dbasedir, "data.sqlite")
+# dbasedir = os.path.abspath(os.path.dirname(__file__))
+# app.config["SQLALCHEMY_DATABASE_URI"]="sqlite:///"+os.path.join(dbasedir, "data.sqlite")
+app.config["SQLALCHEMY_DATABASE_URI"]="mysql+mysqlconnector://username:passwd@mysql/auth_db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["JWT_SECRET_KEY"] = "jwtsecretkey"  # put it in env file, must be the same as for 'api' service
 app.config["JWT_TOKEN_LOCATION"] = ["headers", "cookies"]

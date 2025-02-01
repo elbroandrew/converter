@@ -6,10 +6,10 @@ export FLASK_APP=auth.py
 
 dirname="migrations"
 
-if [ -f "data.sqlite" ] ; then
-    rm "data.sqlite"
-    echo "Deleted SQlite DB data.sqlite"
-fi
+# if [ -f "data.sqlite" ] ; then
+#     rm "data.sqlite"
+#     echo "Deleted SQlite DB data.sqlite"
+# fi
 
 if [ -d "$dirname" ]; then
     if ! rm -rf "$dirname"; then
@@ -23,7 +23,7 @@ fi
 if flask db init ; then
     echo "$dirname directory has been created."
     if flask db migrate -m "init db" ; then
-        echo "Make SQlite migrations and create Database"
+        echo "Make SQl migrations and create Database"
         if flask db upgrade ; then
             echo "DB upgrade: successful."
         else

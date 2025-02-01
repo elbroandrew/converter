@@ -21,7 +21,7 @@ Run Dockerfile:
 
 Go to parent dir `converter`:
 
-`docker build -f auth/Dockerfile  -t auth_service . `
+`docker build -f auth/Dockerfile  -t auth_image . `
 
 then run the container:
 
