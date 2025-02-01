@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify, render_template, abort, redirect, url_for, flash, make_response
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, current_user, set_access_cookies, set_refresh_cookies
+from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, set_access_cookies, set_refresh_cookies
+from flask_jwt_extended import get_jwt_identity
 from models.users import User
 from forms import LoginForm, RegistrationForm
 from initialize import jwt, db
@@ -15,7 +16,7 @@ def index():
 def welcome():
     return render_template("welcome.html", username=request.args.get("username"))
 
-@auth_api.errorhandler(404)
+@auth_api.errorhandler(404)   # TODO: check 404 page with blueprint
 def pageNotFound(error):
     return render_template("page404.html", data="Page Not Found."), 404
 
@@ -39,7 +40,12 @@ def register():
             db.session.add(user)
             db.session.commit()
             flash("Thanks for registration!")
-            return redirect(url_for("auth_api.welcome", username=user.username))
+            access_token = create_access_token(identity=user)
+            refresh_token = create_refresh_token(identity=user)
+            resp = make_response(redirect(url_for("auth_api.welcome", username=user.username)))
+            set_access_cookies(resp, access_token)
+            set_refresh_cookies(resp, refresh_token)
+            return resp, 301
         else:
             abort(409)
         
@@ -77,14 +83,15 @@ def login():
     return render_template("login.html", form=form)
 
 
-@auth_api.route("/whoami", methods=["GET"])
+@auth_api.route("/who", methods=["GET", "POST"])
 @jwt_required()
 def protected():
     # We can now access our sqlalchemy User object via `current_user`.
-    return jsonify(
-        id=current_user.id,
-        username=current_user.username,
-        is_admin=current_user.is_admin
-    )
-
+    current_user = get_jwt_identity()
+    # return jsonify(
+    #     id=current_user.id,
+    #     username=current_user.username,
+    #     # is_admin=current_user.is_admin
+    # ), 200
+    return jsonify(logged_in_as=current_user), 200
 
