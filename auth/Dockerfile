@@ -12,12 +12,9 @@ RUN apk del .build-deps
 
 COPY /auth .
 
-# remove this !
-# ENV FLASK_APP=app.py  # it's already in 'sql_init.sh' file
-
 RUN chmod u+x sql_init.sh
 
 EXPOSE 5005
-ENTRYPOINT [ "./sql_init.sh" ]
+# ENTRYPOINT [ "./sql_init.sh" ]
 CMD [ "python3", "./auth.py" ]
 # CMD [ "uwsgi", "--ini", "./uwsgi.ini" ]

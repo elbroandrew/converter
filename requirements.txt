@@ -32,3 +32,5 @@ Flask-SQLAlchemy==3.1.0
 connexion
 Flask-Cors
 mysql-connector-python
+email_validator
+PyJWT==2.9.0

@@ -6,11 +6,6 @@ export FLASK_APP=auth.py
 
 dirname="migrations"
 
-# if [ -f "data.sqlite" ] ; then
-#     rm "data.sqlite"
-#     echo "Deleted SQlite DB data.sqlite"
-# fi
-
 if [ -d "$dirname" ]; then
     if ! rm -rf "$dirname"; then
         echo "Failed to delete $dirname"

@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, render_template, abort, redirect, url_for, flash, make_response
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, set_access_cookies, set_refresh_cookies
-from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import get_jwt_identity, get_jwt
 from models.users import User
 from forms import LoginForm, RegistrationForm
 from initialize import jwt, db
@@ -40,8 +40,13 @@ def register():
             db.session.add(user)
             db.session.commit()
             flash("Thanks for registration!")
-            access_token = create_access_token(identity=user)
-            refresh_token = create_refresh_token(identity=user)
+            
+            access_token = create_access_token(identity=user.id, additional_claims={"username":user.username, 
+                                                                                "email":user.email,
+                                                                                "password_hash": user.password_hash})
+            refresh_token = create_refresh_token(identity=user.id, additional_claims={"username":user.username, 
+                                                                                "email":user.email,
+                                                                                "password_hash": user.password_hash})
             resp = make_response(redirect(url_for("auth_api.welcome", username=user.username)))
             set_access_cookies(resp, access_token)
             set_refresh_cookies(resp, refresh_token)
@@ -53,8 +58,8 @@ def register():
 
 
 @jwt.user_identity_loader
-def user_identity_lookup(user):
-    return user.id
+def user_identity_lookup(id):
+    return id
 
 
 
@@ -73,9 +78,13 @@ def login():
         if not user or not user.check_password(form.password.data):
             return abort(401)
 
-        access_token = create_access_token(identity=user)
-        refresh_token = create_refresh_token(identity=user)
-        resp = make_response(redirect(url_for("auth_api.welcome", username=user.username)))
+        access_token = create_access_token(identity=user.id, additional_claims={"username":user.username, 
+                                                                                "email":user.email,
+                                                                                "password_hash": user.password_hash})
+        refresh_token = create_refresh_token(identity=user.id, additional_claims={"username":user.username, 
+                                                                                "email":user.email,
+                                                                                "password_hash": user.password_hash})
+        resp = make_response(redirect(url_for("auth_api.welcome", username=user.username)))  # redirect to API home page ?
         set_access_cookies(resp, access_token)
         set_refresh_cookies(resp, refresh_token)
         return resp, 301
@@ -86,12 +95,10 @@ def login():
 @auth_api.route("/who", methods=["GET", "POST"])
 @jwt_required()
 def protected():
-    # We can now access our sqlalchemy User object via `current_user`.
-    current_user = get_jwt_identity()
-    # return jsonify(
-    #     id=current_user.id,
-    #     username=current_user.username,
-    #     # is_admin=current_user.is_admin
-    # ), 200
-    return jsonify(logged_in_as=current_user), 200
+
+    claims = get_jwt()
+    user_id = claims["sub"]
+    username = claims.get("username")
+    
+    return jsonify(logged_in_as=username, id=user_id), 200
 
