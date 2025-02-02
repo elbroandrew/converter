@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify, render_template, abort, redirect, url_for, flash, make_response
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, set_access_cookies, set_refresh_cookies
-from flask_jwt_extended import get_jwt_identity, get_jwt
+from flask_jwt_extended import (create_access_token, create_refresh_token, 
+                                jwt_required, set_access_cookies, set_refresh_cookies
+                                )
+from flask_jwt_extended import get_jwt
 from models.users import User
 from forms import LoginForm, RegistrationForm
 from initialize import jwt, db
@@ -13,8 +15,14 @@ def index():
     return render_template("home.html")
 
 @auth_api.route("/welcome", methods=["GET"])  #TODO: REMOVE WELCOME PAGE & REDIRECT TO API HOME PAGE
+@jwt_required(optional=True)
 def welcome():
-    return render_template("welcome.html", username=request.args.get("username"))
+    claims = get_jwt()
+    username = claims.get("username", None)
+    if not username:
+        return abort(401)
+
+    return render_template("welcome.html", username=username)
 
 @auth_api.errorhandler(404)   # TODO: check 404 page with blueprint
 def pageNotFound(error):
@@ -102,7 +110,7 @@ def protected():
 
     claims = get_jwt()
     user_id = claims["sub"]
-    username = claims.get("username")
+    username = claims.get("username", None)
     if not username:
         return abort(401)
     

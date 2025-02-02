@@ -12,9 +12,21 @@ flask db migrate -m "some message here"
 
 flask db upgrade
 ```
-instead of the code above just run `./sqlite_init.sh`
+upd 1:
 
-give it permissions: `sudo chmod u+x sqlite_init.sh` 
+instead of the code above just run `./sql_init.sh`
+
+give it permissions: `sudo chmod u+x sql_init.sh` 
+
+upd 2:
+
+no need in using sql_init.sh script, just remove the records from the `alembic_version` table in MySQL:
+
+`docker exec -ti <mysql container> mysql DELETE FROM alembic_version`
+
+and remove everything from `mysql/data` folder
+
+
 
 
 Run Dockerfile:
