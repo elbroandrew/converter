@@ -12,7 +12,7 @@ RUN apk del .build-deps
 
 COPY /auth .
 
-RUN chmod u+x sql_init.sh
+# RUN chmod u+x sql_init.sh
 
 EXPOSE 5005
 # ENTRYPOINT [ "./sql_init.sh" ]

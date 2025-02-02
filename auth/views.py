@@ -28,6 +28,10 @@ def conflictPage(error):
 def pageError401(error):
     return render_template("page401.html"), 401
 
+@jwt.unauthorized_loader
+def unauthorized_handler(f):
+    return make_response(render_template("page401.html"), 401)
+
 
 @auth_api.route("/register", methods=["GET", "POST"])
 def register():
@@ -99,6 +103,8 @@ def protected():
     claims = get_jwt()
     user_id = claims["sub"]
     username = claims.get("username")
+    if not username:
+        return abort(401)
     
     return jsonify(logged_in_as=username, id=user_id), 200
 
