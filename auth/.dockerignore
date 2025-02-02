@@ -1,0 +1,5 @@
+data.sqlite
+migrations
+__pycache__
+README.md
+.dockerignore

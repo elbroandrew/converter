@@ -32,7 +32,8 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000  # this limits file size for
 app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=3)
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_SECURE'] = True
-
+app.config["JWT_SECRET_KEY"] = "jwtsecretkey"
+app.config["JWT_TOKEN_LOCATION"] = ["headers", "cookies"]
 
 csrf = CSRFProtect(app)
 
