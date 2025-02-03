@@ -46,6 +46,7 @@ def register():
     form = RegistrationForm()
     
     if request.method == "POST" and form.validate_on_submit():
+        #TODO check for EMAIL duplicate when registering a new user!
         user: User = User.query.filter_by(username=form.username.data).one_or_none()
         if user is None:
             user = User(email=form.email.data, username=form.username.data, password=form.password.data)
