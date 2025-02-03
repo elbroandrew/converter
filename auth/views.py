@@ -5,7 +5,7 @@ from flask_jwt_extended import (create_access_token, create_refresh_token,
 from flask_jwt_extended import get_jwt
 from models.users import User
 from forms import LoginForm, RegistrationForm
-from initialize import jwt, db
+from initialize import jwt, db, app
 
 auth_api = Blueprint("auth_api", __name__)
 
@@ -24,7 +24,7 @@ def welcome():
 
     return render_template("welcome.html", username=username)
 
-@auth_api.errorhandler(404)   # TODO: check 404 page with blueprint
+@app.errorhandler(404)   # TODO: check 404 page with blueprint
 def pageNotFound(error):
     return render_template("page404.html", data="Page Not Found."), 404
 
