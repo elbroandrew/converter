@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, render_template, abort, redirect,
 from flask_jwt_extended import (create_access_token, create_refresh_token, 
                                 jwt_required, set_access_cookies, set_refresh_cookies
                                 )
-from flask_jwt_extended import get_jwt
+from flask_jwt_extended import get_jwt, get_jwt_identity
 from models.users import User
 from forms import LoginForm, RegistrationForm
 from initialize import jwt, db, app
@@ -12,7 +12,12 @@ auth_api = Blueprint("auth_api", __name__)
 
 
 @auth_api.route("/", methods=["GET"])
+@jwt_required(optional=True)
 def index():
+    claims = get_jwt()
+    if claims:
+        username = claims.get("username", None)
+        return render_template("welcome.html", username=username)
     return render_template("home.html")
 
 @auth_api.route("/welcome", methods=["GET"])  #TODO: REMOVE WELCOME PAGE & REDIRECT TO API HOME PAGE
@@ -43,11 +48,14 @@ def unauthorized_handler(f):
 
 
 @auth_api.route("/register", methods=["GET", "POST"])
+@jwt_required(optional=True)
 def register():
     form = RegistrationForm()
-    
+    claims = get_jwt()
+    if claims:
+        flash("You are currently logged in.")
+        return render_template("welcome.html", username=claims.get("username"))
     if request.method == "POST" and form.validate_on_submit():
-        #TODO check for EMAIL duplicate when registering a new user!
         user: User = db.session.query(User).filter((User.username==form.username.data) | (User.email==form.email.data)).one_or_none()
         if user is None:
             user = User(email=form.email.data, username=form.username.data, password=form.password.data)
@@ -118,3 +126,8 @@ def protected():
     
     return jsonify(logged_in_as=username, id=user_id), 200
 
+
+@auth_api.route("/logout", ["DELETE"])
+@jwt_required()
+def logout():
+    jti = get_jwt()["jti"]
