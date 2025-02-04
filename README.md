@@ -22,6 +22,17 @@ Flower port: `http://0.0.0.0:5555/`
 
 `pytest -v -s`
 
+## upd-1:
+
+Deploy containers with docker compose via Makefile:
+
+`make up`
+
+Stop & remove the containers:
+
+`make down`
+
+
 ## Скриншоты приложения и Flower с Celery воркером
 ![img1](https://github.com/elbroandrew/converter/blob/8241fde49002457d6bb0390c1c68dd5c275454f8/examples/Screenshot%202024-08-05%20at%2013-04-00%20BLP%20to%20PNG%20image%20converter%20App.png)
 

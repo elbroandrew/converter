@@ -14,31 +14,34 @@ flask db upgrade
 ```
 upd 1:
 
-instead of the code above just run `./sql_init.sh`
+Instead of the code above just run `./sql_init.sh`
 
 give it permissions: `sudo chmod u+x sql_init.sh` 
 
 upd 2:
 
-no need in using sql_init.sh script, just remove the records from the `alembic_version` table in MySQL:
+No need in using `sql_init.sh script`, just remove the records from the `alembic_version` table in MySQL:
 
 `docker exec -ti <mysql container> mysql DELETE FROM alembic_version`
 
 and remove everything from `mysql/data` folder
 
+upd 3:
 
+First start of the MySQL container takes too long, so that the auth `sql_init.sh` script is not able to run successfully.
 
+So, do not run this script and do not remove `mysql/data` folder, just go inside the DB and:
 
-Run Dockerfile:
+`DELETE FROM users;`
 
-Go to parent dir `converter`:
+`ALTER TABLE users AUTO_INCREMENT = 1;`  (to start new IDs from 1 again) if you want to remove all the users,
 
-`docker build -f auth/Dockerfile  -t auth_image . `
+then restart the containers and you can add users again.
 
-then run the container:
+In future -- do not run a database inside a container.
 
-`docker run -d --name auth  -p 5005:5005 auth_service`
+## Run Makefile
 
-then go into the browser on the host machine and put:
+make up
 
-`http://127.0.0.1:5005` -- do not forget to change `127.0.0.1` to `0.0.0.0` in the `auth.py` file.
+make down

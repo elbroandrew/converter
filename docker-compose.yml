@@ -9,6 +9,8 @@ services:
     restart: "no"
     ports:
       - 5005:5005
+    depends_on:
+      - mysql
     networks:
       - myNetwork
 

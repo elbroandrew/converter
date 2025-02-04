@@ -4,6 +4,7 @@
 venv
 **/.pytest_cache
 README.md
+**/README.md
 TODO.txt
 docker-compose.yml
 tests
@@ -15,3 +16,6 @@ tests
 pytest.log
 app.log
 flask.log
+data.sqlite
+migrations
+**/data
