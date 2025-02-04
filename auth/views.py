@@ -6,6 +6,7 @@ from flask_jwt_extended import get_jwt
 from models.users import User
 from forms import LoginForm, RegistrationForm
 from initialize import jwt, db, app
+from sqlalchemy import or_
 
 auth_api = Blueprint("auth_api", __name__)
 
@@ -47,7 +48,7 @@ def register():
     
     if request.method == "POST" and form.validate_on_submit():
         #TODO check for EMAIL duplicate when registering a new user!
-        user: User = User.query.filter_by(username=form.username.data).one_or_none()
+        user: User = db.session.query(User).filter((User.username==form.username.data) | (User.email==form.email.data)).one_or_none()
         if user is None:
             user = User(email=form.email.data, username=form.username.data, password=form.password.data)
             db.session.add(user)
