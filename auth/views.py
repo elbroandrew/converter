@@ -43,15 +43,34 @@ def conflictPage(error):
 
 @auth_api.errorhandler(401)
 def pageError401(error):
+    print("ERROR::401")
     return render_template("page401.html"), 401
 
 @jwt.unauthorized_loader   # error page when JWT is valid, but the user is not authorized to get the resource
 def unauthorized_handler(f):
+    print("ERROR::401::UNAUHTORIZED")
     return make_response(render_template("page401.html"), 401)
 
 @jwt.expired_token_loader
 def expired_token_handler(jwt_header, jwt_data):
-    return make_response(render_template("page401.html"), 401)
+    print("TOKEN EXPIRED, REDIRECT TO '/refresh'", flush=True)
+    return redirect(url_for("auth_api.refresh")), 301
+    
+@auth_api.route("/refresh", methods=["POST", "GET"])
+@jwt_required(refresh=True)
+def refresh():
+    claims = get_jwt()
+    print("REFRESH CLAIMS:: ",claims, flush=True)
+    username = claims.get("username")
+    user_id = claims.get("sub")
+    email = claims.get("email")
+    password_hash=claims.get("password_hash")
+    access_token = create_access_token(identity=user_id, additional_claims={"username":username, 
+                                                                                "email":email,
+                                                                                "password_hash": password_hash})
+    resp = make_response(redirect(url_for("auth_api.index", username=username)))
+    set_access_cookies(resp, access_token)
+    return resp, 301
 
 
 @auth_api.route("/register", methods=["GET", "POST"])
@@ -115,7 +134,7 @@ def login():
         access_token = create_access_token(identity=user.id, additional_claims={"username":user.username, 
                                                                                 "email":user.email,
                                                                                 "password_hash": user.password_hash}, 
-                                                                                fresh=True)
+                                                                                )
         refresh_token = create_refresh_token(identity=user.id, additional_claims={"username":user.username, 
                                                                                 "email":user.email,
                                                                                 "password_hash": user.password_hash})
@@ -130,10 +149,12 @@ def login():
 @auth_api.route("/who", methods=["GET", "POST"])
 @jwt_required()
 def protected():
-
     claims = get_jwt()
+    print("ACCESS TOKEN:: ",claims, flush=True )
     user_id = claims["sub"]
     username = claims.get("username", None)
+    exp_time = claims.get("exp")
+    print("EXP TIME:: ", exp_time, flush=True)
     if not username:
         return abort(401)
     
@@ -144,3 +165,7 @@ def protected():
 @jwt_required()
 def logout():
     jti = get_jwt()["jti"]
+
+
+
+

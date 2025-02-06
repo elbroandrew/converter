@@ -14,6 +14,8 @@
     <div class="jumbotron">
       <h2>Such user already exists.</h2>
     </div>
-    <p>Got to <a href="{{ url_for('auth_api.index') }}">Home Page</a></p>
+    <p>Please <a href="{{ url_for('auth_api.register') }}">Register</a></p>
+    <p>or try<a href="{{ url_for('auth_api.login') }}">Login</a>again</p>
+    <p><a href="{{ url_for('auth_api.index') }}">Home</a></p>
   </body>
 </html>
