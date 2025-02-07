@@ -2,11 +2,14 @@ from flask import Blueprint, request, jsonify, render_template, abort, redirect,
 from flask_jwt_extended import (create_access_token, create_refresh_token, 
                                 jwt_required, set_access_cookies, set_refresh_cookies
                                 )
-from flask_jwt_extended import get_jwt, get_jwt_identity
+from flask_jwt_extended import get_jwt, unset_jwt_cookies
 from models.users import User
 from forms import LoginForm, RegistrationForm
 from initialize import jwt, db, app
-from sqlalchemy import or_
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
+
 
 auth_api = Blueprint("auth_api", __name__)
 
@@ -30,7 +33,7 @@ def welcome():
 
     return render_template("welcome.html", username=username)
 
-@app.errorhandler(404)   # TODO: check 404 page with blueprint
+@app.errorhandler(404)   #errorhandler for 404 page to work with blueprint
 def pageNotFound(error):
     return render_template("page404.html", data="Page Not Found."), 404
 
@@ -40,11 +43,34 @@ def conflictPage(error):
 
 @auth_api.errorhandler(401)
 def pageError401(error):
+    print("ERROR::401")
     return render_template("page401.html"), 401
 
-@jwt.unauthorized_loader
+@jwt.unauthorized_loader   # error page when JWT is valid, but the user is not authorized to get the resource
 def unauthorized_handler(f):
+    print("ERROR::401::UNAUHTORIZED")
     return make_response(render_template("page401.html"), 401)
+
+@jwt.expired_token_loader
+def expired_token_handler(jwt_header, jwt_data):
+    print("TOKEN EXPIRED, REDIRECT TO '/refresh'", flush=True)
+    return redirect(url_for("auth_api.refresh")), 301
+    
+@auth_api.route("/refresh", methods=["POST", "GET"])
+@jwt_required(refresh=True)
+def refresh():
+    claims = get_jwt()
+    print("REFRESH CLAIMS:: ",claims, flush=True)
+    username = claims.get("username")
+    user_id = claims.get("sub")
+    email = claims.get("email")
+    password_hash=claims.get("password_hash")
+    access_token = create_access_token(identity=user_id, additional_claims={"username":username, 
+                                                                                "email":email,
+                                                                                "password_hash": password_hash})
+    resp = make_response(redirect(url_for("auth_api.index", username=username)))
+    set_access_cookies(resp, access_token)
+    return resp, 301
 
 
 @auth_api.route("/register", methods=["GET", "POST"])
@@ -91,8 +117,13 @@ def user_lookup_callback(_jwt_header, jwt_data):
     return User.query.filter_by(id=identity).one_or_none()
 
 
-@auth_api.route("/login/", methods=["GET", "POST"])
+@auth_api.route("/login", methods=["GET", "POST"])
+@jwt_required(optional=True)
 def login():
+    claims = get_jwt()
+    if claims:
+        flash("You are currently logged in.")
+        return render_template("welcome.html", username=claims.get("username"))
     form = LoginForm()
     if request.method == "POST" and form.validate_on_submit():
         user: User = User.query.filter_by(email=form.email.data).one_or_none()
@@ -102,7 +133,8 @@ def login():
 
         access_token = create_access_token(identity=user.id, additional_claims={"username":user.username, 
                                                                                 "email":user.email,
-                                                                                "password_hash": user.password_hash})
+                                                                                "password_hash": user.password_hash}, 
+                                                                                )
         refresh_token = create_refresh_token(identity=user.id, additional_claims={"username":user.username, 
                                                                                 "email":user.email,
                                                                                 "password_hash": user.password_hash})
@@ -117,17 +149,23 @@ def login():
 @auth_api.route("/who", methods=["GET", "POST"])
 @jwt_required()
 def protected():
-
     claims = get_jwt()
+    print("ACCESS TOKEN:: ",claims, flush=True )
     user_id = claims["sub"]
     username = claims.get("username", None)
+    exp_time = claims.get("exp")
+    print("EXP TIME:: ", exp_time, flush=True)
     if not username:
         return abort(401)
     
     return jsonify(logged_in_as=username, id=user_id), 200
 
 
-@auth_api.route("/logout", ["DELETE"])
+@auth_api.route("/logout", methods=["POST", 'GET'])
 @jwt_required()
 def logout():
     jti = get_jwt()["jti"]
+
+
+
+

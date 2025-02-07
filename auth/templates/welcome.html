@@ -17,11 +17,9 @@
     <h1>Welcome Page</h1>
 
     <h2 class="jumbotron">Welcome, <b>{{ username }}</b>!</h2>
-
     <p>
-      <a href="{{ url_for('auth_api.index') }}">Home</a>
+      <a href="{{ url_for('auth_api.protected') }}">WHO</a>
     </p>
-    <br>
     <p>
       <a href="{{ url_for('auth_api.logout') }}">Logout</a>
     </p>
