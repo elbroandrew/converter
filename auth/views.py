@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, render_template, abort, redirect, url_for, flash, make_response
+from flask import Blueprint, request, jsonify, render_template, abort, redirect, session, url_for, flash, make_response
 from flask_jwt_extended import (create_access_token, create_refresh_token, 
                                 jwt_required, set_access_cookies, set_refresh_cookies
                                 )
@@ -6,9 +6,6 @@ from flask_jwt_extended import get_jwt, unset_jwt_cookies
 from models.users import User
 from forms import LoginForm, RegistrationForm
 from initialize import jwt, db, app
-from datetime import datetime
-from datetime import timedelta
-from datetime import timezone
 
 
 auth_api = Blueprint("auth_api", __name__)
@@ -19,19 +16,18 @@ auth_api = Blueprint("auth_api", __name__)
 def index():
     claims = get_jwt()
     if claims:
-        username = claims.get("username", None)
-        return render_template("welcome.html", username=username)
+        return redirect(url_for("welcome.html"))
     return render_template("home.html")
 
+
 @auth_api.route("/welcome", methods=["GET"])  #TODO: REMOVE WELCOME PAGE & REDIRECT TO API HOME PAGE
-@jwt_required(optional=True)
+@jwt_required()
 def welcome():
     claims = get_jwt()
     username = claims.get("username", None)
-    if not username:
-        return abort(401)
 
     return render_template("welcome.html", username=username)
+
 
 @app.errorhandler(404)   #errorhandler for 404 page to work with blueprint
 def pageNotFound(error):
@@ -54,7 +50,7 @@ def unauthorized_handler(f):
 @jwt.expired_token_loader
 def expired_token_handler(jwt_header, jwt_data):
     print("TOKEN EXPIRED, REDIRECT TO '/refresh'", flush=True)
-    return redirect(url_for("auth_api.refresh")), 301
+    return redirect(url_for("auth_api.refresh")), 302
     
 @auth_api.route("/refresh", methods=["POST", "GET"])
 @jwt_required(refresh=True)
@@ -64,13 +60,11 @@ def refresh():
     username = claims.get("username")
     user_id = claims.get("sub")
     email = claims.get("email")
-    password_hash=claims.get("password_hash")
     access_token = create_access_token(identity=user_id, additional_claims={"username":username, 
-                                                                                "email":email,
-                                                                                "password_hash": password_hash})
+                                                                                "email":email})
     resp = make_response(redirect(url_for("auth_api.index", username=username)))
     set_access_cookies(resp, access_token)
-    return resp, 301
+    return resp, 302
 
 
 @auth_api.route("/register", methods=["GET", "POST"])
@@ -90,15 +84,13 @@ def register():
             flash("Thanks for registration!")
             
             access_token = create_access_token(identity=user.id, additional_claims={"username":user.username, 
-                                                                                "email":user.email,
-                                                                                "password_hash": user.password_hash})
+                                                                                "email":user.email})
             refresh_token = create_refresh_token(identity=user.id, additional_claims={"username":user.username, 
-                                                                                "email":user.email,
-                                                                                "password_hash": user.password_hash})
+                                                                                "email":user.email})
             resp = make_response(redirect(url_for("auth_api.welcome", username=user.username)))
             set_access_cookies(resp, access_token)
             set_refresh_cookies(resp, refresh_token)
-            return resp, 301
+            return resp, 302
         else:
             abort(409)
         
@@ -132,16 +124,14 @@ def login():
             return abort(401)
 
         access_token = create_access_token(identity=user.id, additional_claims={"username":user.username, 
-                                                                                "email":user.email,
-                                                                                "password_hash": user.password_hash}, 
+                                                                                "email":user.email}, 
                                                                                 )
         refresh_token = create_refresh_token(identity=user.id, additional_claims={"username":user.username, 
-                                                                                "email":user.email,
-                                                                                "password_hash": user.password_hash})
+                                                                                "email":user.email})
         resp = make_response(redirect(url_for("auth_api.welcome", username=user.username)))  # redirect to API home page ?
         set_access_cookies(resp, access_token)
         set_refresh_cookies(resp, refresh_token)
-        return resp, 301
+        return resp, 302
 
     return render_template("login.html", form=form)
 
@@ -162,10 +152,18 @@ def protected():
 
 
 @auth_api.route("/logout", methods=["POST", 'GET'])
-@jwt_required()
+@jwt_required(verify_type=False)
 def logout():
-    jti = get_jwt()["jti"]
+    jwt_data = get_jwt()
+    jti = jwt_data["jti"]
+    token_type = jwt_data["type"]
 
+    resp = make_response(redirect(url_for("auth_api.login")))
+
+    unset_jwt_cookies(resp)
+    session.clear()
+
+    return resp
 
 
 
